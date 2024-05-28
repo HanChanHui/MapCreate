@@ -1,0 +1,30 @@
+.btn:hover {
+    background-color: rgb(24, 27, 31);
+    color: rgb(253, 208, 82);
+}
+
+.btn:active {
+    border-color: rgb(253, 208, 82);
+}
+
+.horizontal {
+    justify-content: center;
+    align-items: center;
+}
+
+.text1 {
+    -unity-text-align: upper-center;
+}
+
+.unity-integer-field {
+}
+
+.asd {
+    width: 150px;
+    height: 50px;
+    border-left-color: rgb(255, 255, 255);
+    border-right-color: rgb(255, 255, 255);
+    border-top-color: rgb(255, 255, 255);
+    border-bottom-color: rgb(255, 255, 255);
+    -unity-text-outline-color: rgb(255, 255, 255);
+}
