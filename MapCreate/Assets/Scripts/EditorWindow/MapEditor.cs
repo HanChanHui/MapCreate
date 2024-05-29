@@ -8,6 +8,8 @@ using Newtonsoft.Json;
 class Map{
     public string name = new string("");
     public int Lv = 0;
+    public int width = 0;
+    public int height = 0;
     public List<int> idx = new List<int>();
 
     public Map()
@@ -168,6 +170,28 @@ public class MapEditor : EditorWindow
         }
     }
 
+    private void BtnCreate(int _width, int _height)
+    {
+        // 버튼들을 생성하고 초기화
+
+        if (btnTool.childCount != 0)
+        {
+            BtnDestroy();
+        }
+
+        int maxRange = _width * _height;
+        for (int i = 0; i < maxRange; i++)
+        {
+            buttons[i].btn = new Button();
+            buttons[i].btn.style.width = 50;
+            buttons[i].btn.style.height = 50;
+            buttons[i].btn.name = i.ToString();
+            btnTool.Add(buttons[i].btn);
+            buttons[i].btn.clickable.clickedWithEventInfo += BtnClick;
+            buttons[i].btn.style.backgroundImage = new StyleBackground(icon[0]);
+        }
+    }
+
     private void BtnDestroy()
     {
         Debug.Log(btnTool.childCount);
@@ -223,28 +247,15 @@ public class MapEditor : EditorWindow
         //streamSave.WriteLine("0,1,2,3,4,5,6,7,8,9,10,11");
         maps.Lv = currentLevel;
         maps.name = "Lv" + currentLevel.ToString();
-        int cnt = 0;
-        for(int i = 0; i < 13; i++)
+        maps.width = widthField.value;
+        maps.height = heightField.value;
+
+        for(int i = 0; i < widthField.value * heightField.value; i++)
         {
-            //string s = null;
-            for(int j = 0; j < 13; j++)
-            {
-                maps.idx.Add(buttons[cnt].btnIconNum);
-                // if(j < 11)
-                // {
-                //     s += buttons[cnt].btnIconNum + ",";
-                // }
-                // else
-                // {
-                //     s += buttons[cnt].btnIconNum + "\n";
-                // }
-                cnt++;
-                //maps.idx.Add(i);
-            }
-            //streamSave.Write(s);
+            maps.idx.Add(buttons[i].btnIconNum);
         }
         string jsonData = JsonUtility.ToJson(maps);
-        string path = Path.Combine(Application.dataPath + "/Resources/Maps", "Lv" + currentLevel.ToString());
+        string path = Path.Combine(Application.dataPath + "/Resources/Maps", "Lv" + currentLevel.ToString() + ".json");
         File.WriteAllText(path, jsonData);
 
 
@@ -261,44 +272,36 @@ public class MapEditor : EditorWindow
         string filename = Path.GetFileName(path);
         if(!string.IsNullOrEmpty(path))
         {
-            currentLevel = int.Parse(filename.Substring(2, filename.Length - 6));
+            Debug.Log(filename.Substring(2, 1));
+            currentLevel = int.Parse(filename.Substring(2, 1));
             LoadLVBtn(currentLevel);
-            levelField.value = currentLevel;
+            
         }
     }
 
     public void LoadLVBtn(int _lv)
     {
         Map maps = new Map();
-        
-        if(!Resources.Load("Maps/Lv" + _lv))
-        {
-            for(int i = 0; i < widthField.value * heightField.value; i++)
-            {
-                buttons[i].btnIconNum = 0;
-                buttons[i].btn.style.backgroundImage = new StyleBackground(icon[buttons[i].btnIconNum]);
-            }
-            return;
-        }
 
-        currentLevel = _lv;
+        BtnDestroy();
+
+        //currentLevel = _lv;
         //string path = "Maps/Lv" + _lv;
         //var data = CacheServerConnectionChangedParameters 
 
-        string path = Path.Combine(Application.dataPath + "/Resources/Maps", "Lv" + currentLevel.ToString());
+        string path = Path.Combine(Application.dataPath + "/Resources/Maps", "Lv" + currentLevel.ToString() + ".json");
         string jsonData = File.ReadAllText(path);
         maps = JsonUtility.FromJson<Map>(jsonData);
-
-        int cnt = 0;
-        for(int i = 0; i < 12; i++)
+        //levelField.value = maps.Lv;
+        BtnCreate(maps.width, maps.height);
+        //int cnt = 0;
+        int maxRange = maps.width * maps.height;
+        for (int i = 0; i < maxRange; i++)
         {
-            for(int j = 0; j < 12; j++)
-            {
-                //TODO Json 불러오는 방식 사용.
-                //int dataSet = maps[i].idx;
-                //buttons[i].btnIconNum = ;
-                //buttons[i].btn.style.backgroundImage
-            }
+            //TODO Json 불러오는 방식 사용.
+            //int dataSet = maps[i].idx;
+            buttons[i].btnIconNum = maps.idx[i];
+            buttons[i].btn.style.backgroundImage = new StyleBackground(icon[maps.idx[i]]);
         }
     }
 
