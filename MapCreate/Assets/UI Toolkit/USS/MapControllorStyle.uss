@@ -1,0 +1,68 @@
+.button {
+    position: relative;
+    flex-shrink: 1;
+    flex-grow: 0;
+    width: 150px;
+    height: 50px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+    margin-top: 5px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    margin-left: 5px;
+    padding-top: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+    background-image: url("project://database/Assets/Assets/UI%20pack/Button/Blue%20gradient.png?fileID=2800000&guid=60cfd84ae231a4943b3f0f6cf0dcf409&type=3#Blue gradient");
+    background-color: rgba(188, 188, 188, 0);
+    -unity-background-scale-mode: scale-and-crop;
+    color: rgb(255, 255, 255);
+}
+
+.button:active {
+    scale: 1.1 1.1;
+    background-color: rgba(12, 12, 12, 0);
+    border-left-color: rgba(0, 0, 0, 0);
+    border-right-color: rgba(0, 0, 0, 0);
+    border-top-color: rgba(0, 0, 0, 0);
+    border-bottom-color: rgba(0, 0, 0, 0);
+    -unity-background-image-tint-color: rgb(228, 236, 50);
+}
+
+.button-grid {
+    flex-shrink: 1;
+    width: 50px;
+    height: 50px;
+    padding-top: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+    background-color: rgba(188, 188, 188, 0);
+    background-image: url("project://database/Assets/Assets/Undead%20Survivor/Sprites/Tiles.png?fileID=2093186594&guid=9ee30eb7d2f1f404790266ee96a67099&type=3#Tile 0");
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+}
+
+.button-grid--check {
+    border-left-color: rgb(255, 0, 0);
+    border-right-color: rgb(255, 0, 0);
+    border-top-color: rgb(255, 0, 0);
+    border-bottom-color: rgb(255, 0, 0);
+    border-top-width: 5px;
+    border-right-width: 5px;
+    border-bottom-width: 5px;
+    border-left-width: 5px;
+}

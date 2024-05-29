@@ -2,22 +2,25 @@
     <Style src="project://database/Assets/UI%20Toolkit/USS/MapControllorStyle.uss?fileID=7433441132597879392&amp;guid=ce570e9b83c0da748910ea6fe189f1dc&amp;type=3#MapControllorStyle" />
     <ui:VisualElement name="Containers" style="flex-grow: 1; flex-direction: column;">
         <ui:VisualElement style="flex-grow: 0; width: 100%; height: auto; flex-direction: row;">
-            <ui:IntegerField label="Width" value="0" />
-            <ui:IntegerField label="Height" value="0" />
-            <ui:Button text="Create" parse-escape-sequences="true" display-tooltip-when-elided="true" style="align-self: auto; position: relative; flex-direction: column; justify-content: flex-start; flex-shrink: 1; align-items: stretch;" />
+            <ui:IntegerField label="Width" value="0" name="width_int" />
+            <ui:IntegerField label="Height" value="0" name="height_int" />
+            <ui:Button text="Create" parse-escape-sequences="true" display-tooltip-when-elided="true" name="createBtn" style="align-self: auto; position: relative; flex-direction: column; justify-content: flex-start; flex-shrink: 1; align-items: stretch;" />
         </ui:VisualElement>
         <ui:VisualElement style="flex-grow: 0; width: 100%; height: auto; flex-direction: row; align-self: center; justify-content: center; flex-wrap: nowrap; align-items: center;">
-            <ui:Button text="Save" parse-escape-sequences="true" display-tooltip-when-elided="true" enable-rich-text="true" style="position: relative; flex-shrink: 1; flex-grow: 0; width: 150px; height: 50px; border-top-left-radius: 5px; border-top-right-radius: 5px; border-bottom-right-radius: 5px; border-bottom-left-radius: 5px; border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0; margin-top: 5px; margin-right: 5px; margin-bottom: 5px; margin-left: 5px; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0;" />
-            <ui:Button text="Load" parse-escape-sequences="true" display-tooltip-when-elided="true" enable-rich-text="true" style="position: relative; flex-shrink: 1; flex-grow: 0; width: 150px; height: 50px; border-top-left-radius: 5px; border-top-right-radius: 5px; border-bottom-right-radius: 5px; border-bottom-left-radius: 5px; border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0; margin-top: 5px; margin-right: 5px; margin-bottom: 5px; margin-left: 5px; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0;" />
+            <ui:Button text="Save" parse-escape-sequences="true" display-tooltip-when-elided="true" enable-rich-text="true" name="saveBtn" class="button" />
+            <ui:Button text="Load" parse-escape-sequences="true" display-tooltip-when-elided="true" enable-rich-text="true" name="loadBtn" class="button" style="position: relative; flex-shrink: 1; flex-grow: 0; width: 150px; height: 50px; border-top-left-radius: 5px; border-top-right-radius: 5px; border-bottom-right-radius: 5px; border-bottom-left-radius: 5px; border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0; margin-top: 5px; margin-right: 5px; margin-bottom: 5px; margin-left: 5px; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0;" />
         </ui:VisualElement>
         <ui:VisualElement name="VisualElement" style="flex-grow: 0; width: 100%; height: auto;">
             <ui:IntegerField label="Current Level" value="0" style="flex-shrink: 1; flex-wrap: nowrap; width: 40%;" />
         </ui:VisualElement>
-        <ui:VisualElement name="VisualElement" style="flex-grow: 0; width: 100%; height: auto; flex-direction: row;">
-            <ui:VisualElement name="sprite" style="flex-grow: 0; width: 50px; height: 50px; margin-top: 5px; margin-right: 5px; margin-bottom: 5px; margin-left: 5px; background-image: url(&quot;project://database/Assets/UI%20Toolkit/UnityThemes/UnityDefaultRuntimeTheme.tss?fileID=2346436936791262179&amp;guid=87c4d2a29fbaa204e83de0e900f49e2e&amp;type=3#console.infoicon&quot;); background-color: rgb(0, 255, 242);" />
-            <ui:VisualElement name="sprite" style="flex-grow: 0; width: 50px; height: 50px; margin-top: 5px; margin-right: 5px; margin-bottom: 5px; margin-left: 5px; background-image: url(&quot;project://database/Assets/UI%20Toolkit/UnityThemes/UnityDefaultRuntimeTheme.tss?fileID=2346436936791262179&amp;guid=87c4d2a29fbaa204e83de0e900f49e2e&amp;type=3#console.infoicon&quot;); background-color: rgb(0, 255, 242);" />
-            <ui:VisualElement name="sprite" style="flex-grow: 0; width: 50px; height: 50px; margin-top: 5px; margin-right: 5px; margin-bottom: 5px; margin-left: 5px; background-image: url(&quot;project://database/Assets/UI%20Toolkit/UnityThemes/UnityDefaultRuntimeTheme.tss?fileID=2346436936791262179&amp;guid=87c4d2a29fbaa204e83de0e900f49e2e&amp;type=3#console.infoicon&quot;); background-color: rgb(0, 255, 242);" />
+        <ui:VisualElement name="gridCheckTool" style="flex-grow: 0; width: 100%; height: auto; flex-direction: row;">
+            <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="grid_1" tabindex="1" class="button-grid" />
+            <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="grid_2" tabindex="2" class="button-grid" style="background-image: url(&quot;project://database/Assets/Resources/Tile%201.asset?fileID=21300000&amp;guid=f96f0c1c2cf4ed842b643c4cd4a88355&amp;type=2#Tile 1&quot;);" />
+            <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="grid_3" tabindex="3" class="button-grid" style="background-image: url(&quot;project://database/Assets/Resources/Tile%202.asset?fileID=21300000&amp;guid=7f27587383e0c2645be4f80b1a1b31aa&amp;type=2#Tile 2&quot;);" />
+            <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="grid_4" tabindex="4" class="button-grid" style="background-image: url(&quot;project://database/Assets/Assets/Undead%20Survivor/Sprites/Tiles.png?fileID=179664457&amp;guid=9ee30eb7d2f1f404790266ee96a67099&amp;type=3#Tile 3&quot;);" />
+            <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="grid_5" tabindex="5" class="button-grid" style="background-image: url(&quot;project://database/Assets/Assets/Undead%20Survivor/Sprites/Tiles.png?fileID=1830541467&amp;guid=9ee30eb7d2f1f404790266ee96a67099&amp;type=3#Tile 4&quot;);" />
+            <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="grid_6" tabindex="6" class="button-grid" style="background-image: url(&quot;project://database/Assets/Assets/Undead%20Survivor/Sprites/Tiles.png?fileID=-133327340&amp;guid=9ee30eb7d2f1f404790266ee96a67099&amp;type=3#Tile 5&quot;);" />
         </ui:VisualElement>
-        <ui:VisualElement name="VisualElement" style="flex-grow: 1; width: 100%; height: auto;" />
+        <ui:VisualElement name="btnTool" style="flex-grow: 1; width: 100%; height: auto; flex-direction: row; flex-wrap: wrap; background-image: none;" />
     </ui:VisualElement>
 </ui:UXML>
