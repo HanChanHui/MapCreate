@@ -1,0 +1,7 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI%20Toolkit/USS/ScrollorStyle.uss?fileID=7433441132597879392&amp;guid=016eea0a5dbc9764ea3e22fe257f9ca7&amp;type=3#ScrollorStyle" />
+    <ui:ScrollView mode="Vertical" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="AlwaysVisible" vertical-page-size="-1" focusable="false" class="unity-scroll-view__content-viewport--vertical" style="width: 100%; height: 100%; flex-direction: column; align-items: stretch; justify-content: flex-start; align-self: auto; flex-wrap: nowrap;">
+        <ui:VisualElement style="flex-grow: 1;" />
+        <ui:Label tabindex="-1" text="Label" parse-escape-sequences="true" display-tooltip-when-elided="true" />
+    </ui:ScrollView>
+</ui:UXML>

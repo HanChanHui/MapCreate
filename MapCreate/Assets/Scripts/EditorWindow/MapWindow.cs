@@ -6,23 +6,23 @@ using UnityEngine.UIElements;
 using Newtonsoft.Json;
 
 
-class Map{
+class Maped{
     public string name = new string("");
     public int Lv = 0;
     public int width = 0;
     public int height = 0;
     public List<int> idx = new List<int>();
 
-    public Map()
+    public Maped()
     {
 
     }
 }
 
 
-public class MapEditor : EditorWindow
+public class MapWindow : EditorWindow
 {
-    /// <summary>
+   /// <summary>
     /// 아이콘 저장
     /// </summary>
     public Sprite[] icon = new Sprite[10];
@@ -315,7 +315,7 @@ public class MapEditor : EditorWindow
         }
         
         //TODO Json으로 저장하는 방식 제작.
-        Map maps = new Map();
+        Maped maps = new Maped();
 
         maps.Lv = currentLevel;
         maps.name = "Lv" + currentLevel.ToString();
@@ -358,11 +358,11 @@ public class MapEditor : EditorWindow
 
     public void LoadLVBtn(string _path)
     {
-        Map maps = new Map();
+        Maped maps = new Maped();
 
         string path = Path.Combine(_path);
         string jsonData = File.ReadAllText(path);
-        maps = JsonUtility.FromJson<Map>(jsonData);
+        maps = JsonUtility.FromJson<Maped>(jsonData);
 
         // 버튼 생성
         BtnCreate(maps.width, maps.height);
