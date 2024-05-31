@@ -1,0 +1,5 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement style="flex-grow: 1; width: 100%; height: 100%; background-color: rgb(192, 246, 250);">
+        <ui:VisualElement name="btnToolPanel" style="flex-grow: 0; width: 0; height: 0; flex-direction: row; flex-wrap: wrap; background-image: none; align-items: stretch; flex-basis: 0; flex-shrink: 0; opacity: 1; justify-content: space-around; align-self: auto;" />
+    </ui:VisualElement>
+</ui:UXML>
