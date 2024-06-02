@@ -10,7 +10,7 @@ class Map{
     public int lv;
     public int width = 0;
     public int height = 0;
-    public List<int> idx = new List<int>();
+    public Dictionary<int,int> idx = new Dictionary<int, int>();
 
     public Map()
     {
@@ -20,15 +20,16 @@ class Map{
 
 public class MapEditors : MonoBehaviour
 {
-    /// <summary>
-    /// 아이콘 저장
-    /// </summary>
-    public Sprite[] icon = new Sprite[10];
+   
 
         /// <summary>
     /// 맵 정보를 담을 버튼
     /// </summary>
     public ButtonData[] buttons = new ButtonData[0];
+    /// <summary>
+    /// 아이콘 / 회전값 저장
+    /// </summary>
+    public IconData[] iconData = new IconData[0];
 
     /// <summary>
     /// 현재 레벨
@@ -37,7 +38,7 @@ public class MapEditors : MonoBehaviour
     /// <summary>
     /// 타일 버튼을 선택한 인덱스
     /// </summary>
-    public int selectInt;
+    public int[,] selectInt;
 
     /// <summary>
     /// Icon 갯수
@@ -47,23 +48,24 @@ public class MapEditors : MonoBehaviour
     public MapWindow window;
     public VisualElement btnTool;
 
+
     public void Init()
     {
         currentLevel = 0;
-        selectInt = 0;
+        selectInt = new int[0,0];
         iconCnt = 0;
         IconLoad();
     }
 
     public void IconLoad()
     {
-        icon[iconCnt++] = null;
-        icon[iconCnt++] = Resources.Load<Sprite>("Sprite/Tile 0");
-        icon[iconCnt++] = Resources.Load<Sprite>("Sprite/Tile 1");
-        icon[iconCnt++] = Resources.Load<Sprite>("Sprite/Tile 2");
-        icon[iconCnt++] = Resources.Load<Sprite>("Sprite/Tile 3");
-        icon[iconCnt++] = Resources.Load<Sprite>("Sprite/Tile 4");
-        icon[iconCnt++] = Resources.Load<Sprite>("Sprite/Tile 5");
+        iconData[iconCnt++].icon = null;
+        iconData[iconCnt++].icon = Resources.Load<Sprite>("Sprite/Tile 0");
+        iconData[iconCnt++].icon = Resources.Load<Sprite>("Sprite/Tile 1");
+        iconData[iconCnt++].icon = Resources.Load<Sprite>("Sprite/Tile 2");
+        iconData[iconCnt++].icon = Resources.Load<Sprite>("Sprite/Tile 3");
+        iconData[iconCnt++].icon = Resources.Load<Sprite>("Sprite/Tile 4");
+        iconData[iconCnt++].icon = Resources.Load<Sprite>("Sprite/Tile 5");
     }
 
     /// <summary>
@@ -85,7 +87,7 @@ public class MapEditors : MonoBehaviour
     /// </summary>
     public void IconCreate(VisualElement _panel, List<Button> _buttons, string _name, int _iconEventCnt)
     {
-        icon[iconCnt++] = Resources.Load<Sprite>("Sprite/" + _name);
+        iconData[iconCnt++].icon = Resources.Load<Sprite>("Sprite/" + _name);
         Debug.Log(_name);
         
         // Icon 추가
@@ -100,7 +102,7 @@ public class MapEditors : MonoBehaviour
         _buttons[_iconEventCnt++].RegisterCallback<ClickEvent>(evt => OnGridCheckButton(evt, _buttons));
         btn.AddToClassList("button-grid");
         btn.tabIndex = iconCnt - 1;
-        btn.style.backgroundImage = new StyleBackground(icon[iconCnt - 1]);
+        btn.style.backgroundImage = new StyleBackground(iconData[iconCnt - 1].icon);
     }
 
 
@@ -124,20 +126,21 @@ public class MapEditors : MonoBehaviour
 
             // 선택
             target.AddToClassList("button-grid--check");
-            selectInt = target.tabIndex;
+            // TODO 회전값을 받아서 적용하게끔 적용.
+            selectInt = new int[target.tabIndex, 0];
         }
         else
         {
             // 취소
             target.RemoveFromClassList("button-grid--check");
-            selectInt = 0;
+            selectInt = new int[0, 0];
         }  
     }
 
     /// <summary>
     /// Create 버튼을 눌러서 맵 생성.
     /// </summary>
-    public void BtnCreate(Label _result, int _width, int _height)
+    public void BtnCreate(Toggle _toggle, Label _result, int _width, int _height)
     {
         // grid가 이미 있을땐, 생성 불가
         if(btnTool != null && btnTool.childCount != 0)
@@ -146,7 +149,7 @@ public class MapEditors : MonoBehaviour
             return;
         }
         
-        WindowCreate(_width, _height);
+        WindowCreate(_toggle, _width, _height);
         
         
         _result.text = "생성 완료";
@@ -155,7 +158,7 @@ public class MapEditors : MonoBehaviour
     /// <summary>
     /// Map Window 창 생성
     /// </summary>
-    private void WindowCreate(int _width, int _height)
+    private void WindowCreate(Toggle _toggle, int _width, int _height)
     {
         window = EditorWindow.GetWindow<MapWindow>();
         window.titleContent = new GUIContent("MapWindow");
@@ -167,10 +170,10 @@ public class MapEditors : MonoBehaviour
         // Window에 있는 btnTool 복사
         btnTool = window.btnTool;
 
-        WindowBtnCreate(btnTool, _width, _height);
+        WindowBtnCreate(btnTool, _toggle, _width, _height);
     }
 
-    private void WindowBtnCreate(VisualElement _btnTool, int _width, int _height)
+    private void WindowBtnCreate(VisualElement _btnTool, Toggle _toggle, int _width, int _height)
     {
         int maxRange = BtnToolPanelSize(_btnTool, _width, _height);
         buttons = new ButtonData[maxRange + 1];
@@ -181,9 +184,9 @@ public class MapEditors : MonoBehaviour
             buttons[i].btn.style.height = 50;
             buttons[i].btn.name = i.ToString();
             _btnTool.Add(buttons[i].btn);
-            buttons[i].btn.RegisterCallback<ClickEvent>(evt => {BtnClick(evt);});
+            buttons[i].btn.RegisterCallback<ClickEvent>(evt => {BtnClick(evt, _toggle, maxRange);});
             //buttons[i].btn.clickable.clickedWithEventInfo += BtnClick;
-            buttons[i].btn.style.backgroundImage = new StyleBackground(icon[0]);
+            buttons[i].btn.style.backgroundImage = new StyleBackground(iconData[0].icon);
         }
     }
 
@@ -192,8 +195,8 @@ public class MapEditors : MonoBehaviour
     /// </summary>
     public int BtnToolPanelSize(VisualElement _btnTool, int _width, int _height)
     {
-        _btnTool.style.width = _width * 50 + (6 * _width);
-        _btnTool.style.height = _height * 50 + (6 * _height);
+        _btnTool.style.width = _width * 50 + (7 * _width);
+        _btnTool.style.height = _height * 50 + (7 * _height);
         return _width * _height;
     }
 
@@ -212,27 +215,27 @@ public class MapEditors : MonoBehaviour
         buttons = new ButtonData[201];
     }
 
-    public void BtnClick(ClickEvent _evt)
+    public void BtnClick(ClickEvent _evt, Toggle _toggle, int _maxRange)
     {
-        var btn = _evt.target as Button;
-        int idx = int.Parse(btn.name);
-        buttons[idx].btnIconNum = selectInt;
-        btn.style.backgroundImage = new StyleBackground(icon[buttons[idx].btnIconNum]);
-    }
-
-     public void IconFullInState(Toggle _toggle, int _width, int _height)
-    {
-        
-        if(_toggle.value)
+        if(!_toggle.value)
         {
-            int maxRange = BtnToolPanelSize(btnTool, _width, _height);
-            for(int i = 0; i < maxRange; i++)
+            var btn = _evt.target as Button;
+            int idx = int.Parse(btn.name);
+            buttons[idx].btnIconNum = selectInt;
+            btn.style.backgroundImage = new StyleBackground(iconData[buttons[idx].btnIconNum[0, 0]].icon);
+        }
+        else
+        {
+            int maxRange = _maxRange;
+            for (int i = 0; i < maxRange; i++)
             {
                 buttons[i].btnIconNum = selectInt;
-                buttons[i].btn.style.backgroundImage = new StyleBackground(icon[buttons[i].btnIconNum]);
+                buttons[i].btn.style.backgroundImage = new StyleBackground(iconData[buttons[i].btnIconNum[0, 0]].icon);
             }
         }
+        
     }
+
 
     public void SaveBtn(Label _fileName, Label _result,  int _width, int _height)
     {
@@ -246,7 +249,8 @@ public class MapEditors : MonoBehaviour
         Map maps = new Map();
 
         float level = currentLevel > 100 ? ((float)currentLevel / 1000) : ((float)currentLevel / 100);
-        string str_lv = level.ToString().Substring(level.ToString().IndexOf('.') + 1, 2);
+        string str_lv = level >= 0 ?  new string("0") : level.ToString().Substring(level.ToString().IndexOf('.') + 1, 2);
+        Debug.Log(str_lv);
         maps.lv = currentLevel;
         maps.name = "Stage" + "_" + _width + "x" + _height + "_" + "0" + str_lv;
         _fileName.text = maps.name;
@@ -257,7 +261,7 @@ public class MapEditors : MonoBehaviour
 
         for(int i = 0; i < maxRange; i++)
         {
-            maps.idx.Add(buttons[i].btnIconNum);
+            //maps.idx.Add(buttons[i].btnIconNum[0][]);
         }
         string jsonData = JsonUtility.ToJson(maps);
         string path = Path.Combine(Application.dataPath + "/Resources/Maps", maps.name + ".json");
@@ -267,7 +271,7 @@ public class MapEditors : MonoBehaviour
         _result.text = "저장 완료";
     }
 
-    public void LoadBtn(Label _fileName, Label _result, BaseField<int> _currentlv)
+    public void LoadBtn(Label _fileName, Label _result, BaseField<int> _currentlv, Toggle _toggle)
     {
         if(btnTool != null || btnTool.childCount == 0)
         {
@@ -276,7 +280,7 @@ public class MapEditors : MonoBehaviour
             string filename = Path.GetFileName(path);
             if(!string.IsNullOrEmpty(path))
             {
-                LoadLVBtn(_fileName, _result, _currentlv, path);
+                LoadLVBtn(_fileName, _result, _currentlv, _toggle, path);
                 //currentLevelField.value = currentLevel;
             }
             _result.text = "불러오기 완료";
@@ -288,7 +292,7 @@ public class MapEditors : MonoBehaviour
         
     }
 
-    public void LoadLVBtn(Label _fileName, Label _result, BaseField<int> _currentlv, string _path)
+    public void LoadLVBtn(Label _fileName, Label _result, BaseField<int> _currentlv, Toggle _toggle, string _path)
     {
         Map maps = new Map();
 
@@ -298,13 +302,13 @@ public class MapEditors : MonoBehaviour
         _fileName.text = maps.name;
         _currentlv.value = maps.lv;
         // 버튼 생성
-        BtnCreate(_result, maps.width, maps.height);
+        BtnCreate(_toggle, _result, maps.width, maps.height);
         // grid 배치
         int maxRange = maps.width * maps.height;
         for (int i = 0; i < maxRange; i++)
         {
-            buttons[i].btnIconNum = maps.idx[i];
-            buttons[i].btn.style.backgroundImage = new StyleBackground(icon[maps.idx[i]]);
+            //buttons[i].btnIconNum = maps.idx[i];
+            buttons[i].btn.style.backgroundImage = new StyleBackground(iconData[maps.idx[i]].icon);
         }
     }
  

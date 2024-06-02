@@ -52,8 +52,7 @@ public class MapEditorsEditor : Editor
         currentLevelField.RegisterValueChangedCallback((evt) => { _mapEditors.ChangeLevel(evt.newValue); });
 
         spritefullin = root.Q<Toggle>("spritefullin");
-        spritefullin.RegisterValueChangedCallback((evt) => {_mapEditors.IconFullInState(spritefullin, widthField.value, heightField.value); });
-        Debug.Log(spritefullin.value);
+        //spritefullin.RegisterValueChangedCallback((evt) => {_mapEditors.IconFullInState(spritefullin, widthField.value, heightField.value); });
         
         // 결과 라벨
         fileName = root.Q<Label>("fileName_label");
@@ -61,10 +60,10 @@ public class MapEditorsEditor : Editor
         
 
         root.Q<Button>("grid_add").clicked += ()=> { _mapEditors.IconAdd(gridiconPanel, gridButtons, iconEventCnt); };
-        root.Q<Button>("createBtn").clicked += ()=> { _mapEditors.BtnCreate(result, widthField.value, heightField.value); };
+        root.Q<Button>("createBtn").clicked += ()=> { _mapEditors.BtnCreate(spritefullin, result, widthField.value, heightField.value); };
         root.Q<Button>("deleteBtn").clicked += ()=> { _mapEditors.BtnClose(); };
         root.Q<Button>("saveBtn").clicked += ()=> { _mapEditors.SaveBtn(fileName, result, widthField.value, heightField.value); };
-        root.Q<Button>("loadBtn").clicked += ()=> { _mapEditors.LoadBtn(fileName, result, currentLevelField); };
+        root.Q<Button>("loadBtn").clicked += ()=> { _mapEditors.LoadBtn(fileName, result, currentLevelField, spritefullin); };
 
         iconEventCnt = 0;
         if(gridiconPanel != null)
