@@ -21,7 +21,7 @@ public class MapEditorsEditor : Editor
 
     public Toggle spritefullin;
 
-    public List<Button> gridButtons = new List<Button>();
+    //public List<Button> gridButtons = new List<Button>();
 
     public int iconEventCnt;
 
@@ -52,18 +52,18 @@ public class MapEditorsEditor : Editor
         currentLevelField.RegisterValueChangedCallback((evt) => { _mapEditors.ChangeLevel(evt.newValue); });
 
         spritefullin = root.Q<Toggle>("spritefullin");
-        //spritefullin.RegisterValueChangedCallback((evt) => {_mapEditors.IconFullInState(spritefullin, widthField.value, heightField.value); });
         
         // 결과 라벨
         fileName = root.Q<Label>("fileName_label");
         result = root.Q<Label>("result_label");
         
 
-        root.Q<Button>("grid_add").clicked += ()=> { _mapEditors.IconAdd(gridiconPanel, gridButtons, iconEventCnt); };
+        root.Q<Button>("grid_add").clicked += ()=> { _mapEditors.IconAdd(gridiconPanel, iconEventCnt); };
         root.Q<Button>("createBtn").clicked += ()=> { _mapEditors.BtnCreate(spritefullin, result, widthField.value, heightField.value); };
         root.Q<Button>("deleteBtn").clicked += ()=> { _mapEditors.BtnClose(); };
         root.Q<Button>("saveBtn").clicked += ()=> { _mapEditors.SaveBtn(fileName, result, widthField.value, heightField.value); };
         root.Q<Button>("loadBtn").clicked += ()=> { _mapEditors.LoadBtn(fileName, result, currentLevelField, spritefullin); };
+        root.Q<Button>("iconrotationBtn").clicked += () => { _mapEditors.IconRotate(); };
 
         iconEventCnt = 0;
         if(gridiconPanel != null)
@@ -75,8 +75,8 @@ public class MapEditorsEditor : Editor
                 {
                     if(button.name != "grid_add")
                     {
-                        gridButtons.Add(button);
-                        gridButtons[iconEventCnt++].RegisterCallback<ClickEvent>(evt => _mapEditors.OnGridCheckButton(evt, gridButtons));
+                        _mapEditors.iconData[iconEventCnt].btn = button;
+                        _mapEditors.iconData[iconEventCnt++].btn.RegisterCallback<ClickEvent>(evt => _mapEditors.OnGridCheckButton(evt, iconEventCnt));
                     }
                 }
             }
@@ -88,9 +88,9 @@ public class MapEditorsEditor : Editor
 
     private void OnDisable()
     {
-        for(int i = 0; i < gridButtons.Count; i++)
+        for(int i = 0; i < iconEventCnt - 1; i++)
         {
-            gridButtons[i].UnregisterCallback<ClickEvent>(evt => _mapEditors.OnGridCheckButton(evt, gridButtons));
+            _mapEditors.iconData[i].btn.UnregisterCallback<ClickEvent>(evt => _mapEditors.OnGridCheckButton(evt, iconEventCnt));
         }
 
         if(_mapEditors != null)
