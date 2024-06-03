@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
@@ -316,22 +315,26 @@ public class MapEditors : MonoBehaviour
         {
             var btn = _evt.target as Button;
             int idx = int.Parse(btn.name);
-            buttons[idx].btnIconNum = selectInt;
-            buttons[idx].btnIconRotate = selecticonRotate;
-            btn.style.backgroundImage = new StyleBackground(iconData[buttons[idx].btnIconNum].icon);
-            btn.style.rotate = new Rotate(new Angle(selecticonRotate * 90));
+            BtnClickState(btn, idx, selectInt, selecticonRotate);
         }
         else
         {
             int maxRange = _maxRange;
             for (int i = 0; i < maxRange; i++)
             {
-                buttons[i].btnIconNum = selectInt;
-                buttons[i].btnIconRotate = selecticonRotate;
-                buttons[i].btn.style.backgroundImage = new StyleBackground(iconData[buttons[i].btnIconNum].icon);
-                buttons[i].btn.style.rotate = new Rotate(new Angle(selecticonRotate * 90));
+                BtnClickState(buttons[i].btn, i, selectInt, selecticonRotate);
             }
         }
+    }
+    /// <summary>
+    /// 버튼 선택 상태.
+    /// </summary>
+    private void BtnClickState(Button _btn, int _idx, int _selectInt, int _selecticonRotate)
+    {
+        buttons[_idx].btnIconNum = _selectInt;
+        buttons[_idx].btnIconRotate = _selecticonRotate;
+        _btn.style.backgroundImage = new StyleBackground(iconData[_selectInt].icon);
+        _btn.style.rotate = new Rotate(new Angle(selecticonRotate * 90));
     }
     /// <summary>
     /// 생성한 Grid를 Json 방식으로 저장.
@@ -403,10 +406,7 @@ public class MapEditors : MonoBehaviour
         int maxRange = maps.width * maps.height;
         for (int i = 0; i < maxRange; i++)
         {
-            buttons[i].btnIconNum = maps.idx[i,0];
-            buttons[i].btnIconRotate = maps.idx[i, 1];
-            buttons[i].btn.style.backgroundImage = new StyleBackground(iconData[maps.idx[i, 0]].icon);
-            buttons[i].btn.style.rotate = new Rotate(new Angle(buttons[i].btnIconRotate * 90));
+            BtnClickState(buttons[i].btn, i, maps.idx[i,0], maps.idx[i, 1]);
         }
     }
 
