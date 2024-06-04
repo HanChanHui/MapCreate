@@ -1,11 +1,14 @@
 using UnityEditor;
+using UnityEngine;
 using UnityEngine.UIElements;
+using System.Collections.Generic;
 
 public class MapWindow : EditorWindow
 {
     public int Editormap;
     
     public VisualElement btnTool;
+
 
     public void CreateGUI()
     {
@@ -14,5 +17,6 @@ public class MapWindow : EditorWindow
         root.Add(visualTree1.Instantiate());
 
         btnTool = root.Q<VisualElement>("btnToolPanel");
+
     }
 }

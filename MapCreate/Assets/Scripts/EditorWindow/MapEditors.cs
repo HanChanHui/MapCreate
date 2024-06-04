@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using Newtonsoft.Json;
 using System.Text;
+using System.Collections.Generic;
 
 class Map{
     public string name;
@@ -25,7 +26,6 @@ class Map{
 public class MapEditors : MonoBehaviour
 {
    
-
     /// <summary>
     /// 맵 정보를 담을 버튼
     /// </summary>
@@ -34,7 +34,6 @@ public class MapEditors : MonoBehaviour
     /// 아이콘 / 회전값 저장
     /// </summary>
     public IconData[] iconData = new IconData[10];
-
     /// <summary>
     /// 현재 레벨
     /// </summary>
@@ -44,7 +43,6 @@ public class MapEditors : MonoBehaviour
     /// </summary>
     public int selectInt;
     public int selecticonRotate;
-
     /// <summary>
     /// Icon 갯수 / IconEvent 갯수
     /// </summary>
@@ -55,6 +53,12 @@ public class MapEditors : MonoBehaviour
     /// </summary>
     public MapWindow window;
     public VisualElement btnTool;
+
+
+    // -------------------------------------
+    public List<Button> selectedButtons = new List<Button>();
+    private Vector2 startDragPos;
+    private bool isDragging = false;
 
 
     public void Init()
@@ -74,11 +78,8 @@ public class MapEditors : MonoBehaviour
             {
                 if(child is Button button)
                 {
-                    if(button.name != "grid_add")
-                    {
-                        iconData[iconEventCnt].btn = button;
-                        iconData[iconEventCnt++].btn.RegisterCallback<ClickEvent>(OnGridCheckButton);
-                    }
+                    iconData[iconEventCnt].btn = button;
+                    iconData[iconEventCnt++].btn.RegisterCallback<ClickEvent>(OnGridCheckButton);
                 }
             }
         }
@@ -109,15 +110,7 @@ public class MapEditors : MonoBehaviour
                 iconData[iconCnt++].rotate = 0;
 
                 // Icon 추가
-                Button btn = new Button();
-                btn.style.width = 50;
-                btn.style.height = 50;
-                btn.name = "grid_" + iconCnt.ToString();
-
-                _panel.Add(btn);
-                btn.AddToClassList("button-grid");
-                btn.tabIndex = iconCnt - 1;
-                btn.style.backgroundImage = new StyleBackground(iconData[iconCnt - 1].icon);
+                IconCreate(_panel, sprites[i].name);
             }
         }
         else
@@ -126,6 +119,9 @@ public class MapEditors : MonoBehaviour
         }
 
     }
+
+    // icon 추가 기능
+    /*
     /// <summary>
     /// icon 파일 불러오기
     /// </summary>
@@ -161,7 +157,23 @@ public class MapEditors : MonoBehaviour
         btn.AddToClassList("button-grid");
         btn.tabIndex = iconCnt - 1;
         btn.style.backgroundImage = new StyleBackground(iconData[iconCnt - 1].icon);
+    }*/
+
+    public void IconCreate (VisualElement _panel, string _name)
+    {
+        Button btn = new Button();
+        btn.style.width = 50;
+        btn.style.height = 50;
+        btn.name = _name;
+
+        _panel.Add(btn);
+        btn.AddToClassList("button-grid");
+
+        string targetIndex = _name.ToString().Substring(_name.ToString().IndexOf('_') + 1);
+        btn.tabIndex = int.Parse(targetIndex);
+        btn.style.backgroundImage = new StyleBackground(iconData[iconCnt - 1].icon);
     }
+
     /// <summary>
     /// icon 회전
     /// </summary>
@@ -197,7 +209,7 @@ public class MapEditors : MonoBehaviour
     /// </summary>
     public void OnGridCheckButton(ClickEvent _evt)
     {
-        var target = _evt.target as VisualElement;
+        var target = _evt.target as Button;
 
         // 초기화
         if(!target.ClassListContains("button-grid--check"))
@@ -269,6 +281,7 @@ public class MapEditors : MonoBehaviour
         buttons = new ButtonData[maxRange + 1];
         for(int i = 0; i < maxRange; i++)
         {
+            int index = i;
             buttons[i].btn = new Button();
             buttons[i].btn.style.width = 50;
             buttons[i].btn.style.height = 50;
@@ -276,8 +289,13 @@ public class MapEditors : MonoBehaviour
             _btnTool.Add(buttons[i].btn);
 
             buttons[i].btn.RegisterCallback<ClickEvent>(evt => {BtnClick(evt, _toggle, maxRange);});
+            buttons[i].btn.RegisterCallback<MouseDownEvent>(evt => OnButtonMouseDown(evt, buttons[index].btn));
             buttons[i].btn.style.backgroundImage = new StyleBackground(iconData[0].icon);
         }
+
+        window.rootVisualElement.RegisterCallback<MouseDownEvent>(OnMouseDowns);
+        window.rootVisualElement.RegisterCallback<MouseMoveEvent>(OnMouseMove);
+        window.rootVisualElement.RegisterCallback<MouseUpEvent>(OnMouseUps);
     }
 
     /// <summary>
@@ -426,6 +444,113 @@ public class MapEditors : MonoBehaviour
         fileStream.Close();
         string jsonData = Encoding.UTF8.GetString(data);
         return JsonConvert.DeserializeObject<T>(jsonData);
+    }
+
+    // -----------------------------------------------------------------------
+
+
+    private void OnButtonMouseDown(MouseDownEvent evt, Button _button)
+    {
+        if (evt.ctrlKey)
+        {
+            ToggleButtonSelection(_button);
+        }
+        else if (selectedButtons.Count == 0 || !selectedButtons.Contains(_button))
+        {
+            ClearSelection();
+            SelectButton(_button);
+        }
+    }
+
+    public void OnMouseDowns(MouseDownEvent evt)
+    {
+        startDragPos = evt.localMousePosition;
+        isDragging = true;
+        ClearSelection();
+    }
+
+    public void OnMouseMove(MouseMoveEvent evt)
+    {
+        if(isDragging)
+        {
+            Vector2 currentPos = evt.localMousePosition;
+            Rect selectionRect = new Rect(Mathf.Min(startDragPos.x, currentPos.x), Mathf.Min(startDragPos.y, currentPos.y),
+                                          Mathf.Abs(startDragPos.x - currentPos.x), Mathf.Abs(startDragPos.y - currentPos.y));
+                                        
+            foreach(var buttonData in buttons)
+            {
+                if(buttonData.btn != null)
+                {
+                    Rect btnRect = buttonData.btn.worldBound;
+                    if(selectionRect.Overlaps(btnRect))
+                    {
+                        SelectButton(buttonData.btn);
+                    }
+                    else
+                    {
+                        DeselectButton(buttonData.btn);
+                    }
+                }
+            }
+        }
+    }
+
+    public void OnMouseUps(MouseUpEvent evt)
+    {
+        isDragging = false;
+    }
+
+    private void ToggleButtonSelection(Button _button)
+    {
+        if(selectedButtons.Contains(_button))
+        {
+            DeselectButton(_button);
+        }
+        else
+        {
+            SelectButton(_button);
+        }
+    }
+
+    public void SelectButton(Button _button)
+    {
+        if(!selectedButtons.Contains(_button))
+        {
+            selectedButtons.Add(_button);
+            ColorChange(_button, 3, 255);
+        }
+    }
+
+    public void DeselectButton(Button _button)
+    {
+        if(selectedButtons.Contains(_button))
+        {
+            selectedButtons.Remove(_button);
+
+            ColorChange(_button, 0, 0);
+        }
+    }
+
+    private void ClearSelection()
+    {
+        foreach(var _button in selectedButtons)
+        {
+            ColorChange(_button, 0, 0);
+        }
+        selectedButtons.Clear();
+    }
+
+    private void ColorChange(Button _button, int _size, byte _alpa)
+    {
+        _button.style.borderTopWidth = _size;
+        _button.style.borderBottomWidth = _size;
+        _button.style.borderRightWidth = _size;
+        _button.style.borderLeftWidth = _size;
+
+        _button.style.borderBottomColor = new StyleColor(new Color32(255, 0, 0, _alpa));
+        _button.style.borderTopColor = new StyleColor(new Color32(255, 0, 0, _alpa));
+        _button.style.borderLeftColor = new StyleColor(new Color32(255, 0, 0, _alpa));
+        _button.style.borderRightColor = new StyleColor(new Color32(255, 0, 0, _alpa));
     }
  
 }

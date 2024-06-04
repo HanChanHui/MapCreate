@@ -1,5 +1,6 @@
 ﻿using UnityEditor;
 using UnityEditor.UIElements;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 
@@ -53,14 +54,19 @@ public class MapEditorsEditor : Editor
         fileName = root.Q<Label>("fileName_label");
         result = root.Q<Label>("result_label");
         
-
-        root.Q<Button>("grid_add").clicked += ()=> { _mapEditors.IconAdd(gridiconPanel); };
+        
+        
+        //root.Q<Button>("grid_add").clicked += ()=> { _mapEditors.IconAdd(gridiconPanel); };
         root.Q<Button>("createBtn").clicked += ()=> { _mapEditors.BtnCreate(spritefullin, result, widthField.value, heightField.value); };
         root.Q<Button>("deleteBtn").clicked += ()=> { _mapEditors.BtnClose(); };
         root.Q<Button>("saveBtn").clicked += ()=> { _mapEditors.SaveBtn(fileName, result, widthField.value, heightField.value); };
         root.Q<Button>("loadBtn").clicked += ()=> { _mapEditors.LoadBtn(fileName, result, currentLevelField, spritefullin); };
         root.Q<Button>("iconrotationBtn").clicked += () => { _mapEditors.IconRotate(); };
 
+
+        //-----------------------------------------
+            
+        //-----------------------------------------
         
         _mapEditors.IconEvent(gridiconPanel);
         

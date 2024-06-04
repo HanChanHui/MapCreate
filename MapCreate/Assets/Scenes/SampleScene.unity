@@ -421,21 +421,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54afc8dd117eecc41a7b6cf2d0b7e812, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  icon:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   currentLevel: 0
   selectInt: 0
-  iconCnt: 0
-  iconEventCnt: 0
+  selecticonRotate: 0
+  iconCnt: 7
+  iconEventCnt: 8
+  window: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
