@@ -5,21 +5,28 @@ using UnityEngine.UIElements;
 using Newtonsoft.Json;
 using System.Text;
 using System.Collections.Generic;
+using System;
+
 
 class Map{
-    public string name;
-    public int lv;
-    public int width;
-    public int height;
-    public int[,] idx;
+    [JsonProperty("name")]
+    public string name { get; set; }
+    [JsonProperty("lv")]
+    public int lv { get; set; }
+    [JsonProperty("width")]
+    public int width { get; set; }
+    [JsonProperty("height")]
+    public int height { get; set; }
+    [JsonProperty("idx")]
+    public List<List<int>> idx { get; set; }
 
     public Map()
     {
-        this.name = new string("");
+        this.name = "";
         this.lv = 0;
         this.width = 0;
         this.height = 0;
-        this.idx = new int[0,0];
+        this.idx = new List<List<int>>();
     }
 }
 
@@ -54,11 +61,14 @@ public class MapEditors : MonoBehaviour
     public MapWindow window;
     public VisualElement btnTool;
 
+    private Map maps;
 
     // -------------------------------------
     public List<Button> selectedButtons = new List<Button>();
     private Vector2 startDragPos;
     private bool isDragging = false;
+
+    private Dictionary<int , GameObject> modelPrefabs = new Dictionary<int, GameObject>();
 
 
     public void Init()
@@ -68,6 +78,8 @@ public class MapEditors : MonoBehaviour
         selecticonRotate = 0;
         iconEventCnt = 0;
         iconCnt = 0;
+        modelPrefabs[1] = Resources.Load<GameObject>("Base");
+        modelPrefabs[2] = Resources.Load<GameObject>("Base_10");
     }
     public void IconEvent(VisualElement _gridiconPanel)
     {
@@ -251,6 +263,9 @@ public class MapEditors : MonoBehaviour
         }
         
         WindowCreate(_toggle, _width, _height);
+        maps = new Map();
+        maps.width = _width;
+        maps.height = _height;
         
         _result.text = "생성 완료";
     }
@@ -296,6 +311,8 @@ public class MapEditors : MonoBehaviour
         window.rootVisualElement.RegisterCallback<MouseDownEvent>(OnMouseDowns);
         window.rootVisualElement.RegisterCallback<MouseMoveEvent>(OnMouseMove);
         window.rootVisualElement.RegisterCallback<MouseUpEvent>(OnMouseUps);
+
+        window.btnCreate.clicked += ()=> {LoadLevel();};
     }
 
     /// <summary>
@@ -367,21 +384,17 @@ public class MapEditors : MonoBehaviour
 
         //TODO Json으로 저장하는 방식 제작.
         int maxRange = _width * _height;
-        Map maps = new Map();
-        maps.idx = new int[maxRange, 2];
+        maps.idx = new List<List<int>>(maxRange);
+        for (int i = 0; i < maxRange; i++)
+        {
+             maps.idx.Add(new List<int> { buttons[i].btnIconNum, buttons[i].btnIconRotate });
+        }
+
         float level = currentLevel > 100 ? ((float)currentLevel / 1000) : ((float)currentLevel / 100);
         string str_lv = level == 0 ?  new string("00") : level.ToString().Substring(level.ToString().IndexOf('.') + 1, 2);
         maps.lv = currentLevel;
         maps.name = "Stage" + "_" + _width + "x" + _height + "_" + "0" + str_lv;
         _fileName.text = maps.name;
-        maps.width = _width;
-        maps.height = _height;
-        
-        for(int i = 0; i < maxRange; i++)
-        {
-            maps.idx[i,0] = buttons[i].btnIconNum;
-            maps.idx[i,1] = buttons[i].btnIconRotate;
-        }
 
         string jsonData = JsonConvert.SerializeObject(maps);
         CreateJsonFile(Application.dataPath + "/Resources/Maps", maps.name, jsonData);
@@ -404,6 +417,7 @@ public class MapEditors : MonoBehaviour
                     "/Resources/Maps", "json");
         string filename = Path.GetFileName(path);
         filename = filename.Substring(0, filename.ToString().IndexOf('.'));
+
         if(!string.IsNullOrEmpty(path))
         {
             LoadLVBtn(_fileName, _result, _currentlv, _toggle, filename);
@@ -413,19 +427,98 @@ public class MapEditors : MonoBehaviour
 
     public void LoadLVBtn(Label _fileName, Label _result, BaseField<int> _currentlv, Toggle _toggle, string _filepath)
     {
-        Map maps = LoadJsonFile<Map>(Application.dataPath + "/Resources/Maps", _filepath);
+        //maps = new Map();
+        maps = LoadJsonFile<Map>(Application.dataPath + "/Resources/Maps", _filepath);
+        
+        Debug.Log($"Loaded map with {maps.idx.Count} items.");
+        // Load된 데이터 출력
+        for (int i = 0; i < maps.idx.Count; i++)
+        {
+            Debug.Log($"maps.idx[{i}] has {maps.idx[i].Count} elements.");
+        }
+        // try
+        // {
+        //     maps = LoadJsonFile<Map>(Application.dataPath + "/Resources/Maps", _filepath);
+
+        //     Debug.Log(maps.name);
+        //     Debug.Log(maps.width);
+        //     Debug.Log(maps.height);
+        //     Debug.Log(maps.lv);
+        //     if (maps.idx != null)
+        //     {
+        //         Debug.Log("Idx count: " + maps.idx.Count);
+        //         foreach (var sublist in maps.idx)
+        //         {
+        //             Debug.Log(string.Join(", ", sublist));
+        //         }
+        //     }
+        //     else
+        //     {
+        //         Debug.Log("Idx is null");
+        //     }
+
+        // }
+        // catch (FileNotFoundException e)
+        // {
+        //     Debug.LogError(e.Message);
+        // }
+        // catch (Exception e)
+        // {
+        //     Debug.LogError(e.Message);
+        // }   
+        // foreach(List<int> innerList in maps.idx)
+        // {
+        //     Debug.Log("maps idx : " + string.Join(", ", innerList));
+        // }
+
 
         // 버튼 생성
         BtnCreate(_toggle, _result, maps.width, maps.height);
         _fileName.text = maps.name;
         _currentlv.value = maps.lv;
 
-        // grid 배치
+        
         int maxRange = maps.width * maps.height;
-        for (int i = 0; i < maxRange; i++)
+        buttons = new ButtonData[maxRange + 1];
+
+        for(int i = 0; i <= maxRange; i++)
         {
-            BtnClickState(buttons[i].btn, i, maps.idx[i,0], maps.idx[i, 1]);
+            buttons[i] = new ButtonData();
         }
+
+        int idx = 0;
+        Debug.Log($"maps.idx is {(maps.idx == null ? "null" : "not null")} and has {maps.idx?.Count ?? 0} elements.");
+        if(maps.idx != null)
+        {
+            foreach (List<int> innerList in maps.idx)
+            {
+            Debug.Log($"maps.idx[{idx}] has {innerList.Count} elements.");
+            if (innerList.Count >= 2) // Ensure there are at least two elements in the inner list
+            {
+                if(buttons[idx].btn == null)
+                {
+                    Debug.LogWarning($"buttons[{idx}].btn is not initialized.");
+                }
+                else
+                {
+                    BtnClickState(buttons[idx].btn, idx, innerList[0], innerList[1]);
+                }
+                
+            }   
+            else
+            {
+                Debug.LogWarning($"maps.idx[{idx}] does not have enough elements.");
+            }
+                idx++;
+            }
+        }
+        else{
+            Debug.LogWarning("maos.idx is null");
+        }
+        // for (int i = 0; i < maxRange; i++)
+        // {
+        //     BtnClickState(buttons[i].btn, i, maps.idx[i][0], maps.idx[i][1]);
+        // }
     }
 
     private void CreateJsonFile(string _createPath, string _fileName, string _jsonData)
@@ -438,17 +531,49 @@ public class MapEditors : MonoBehaviour
 
     private T LoadJsonFile<T>(string _loadPath, string _fileName)
     {
-        FileStream fileStream = new FileStream(string.Format("{0}/{1}.json", _loadPath, _fileName), FileMode.Open);
-        byte[] data = new byte[fileStream.Length];
-        fileStream.Read(data, 0, data.Length);
-        fileStream.Close();
-        string jsonData = Encoding.UTF8.GetString(data);
-        return JsonConvert.DeserializeObject<T>(jsonData);
+        string filePath = string.Format("{0}/{1}.json", _loadPath, _fileName);
+        
+        if (!File.Exists(filePath))
+        {
+            throw new FileNotFoundException("File not found", filePath);
+        }
+
+        using (FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+        {
+            byte[] data = new byte[fileStream.Length];
+            fileStream.Read(data, 0, data.Length);
+            string jsonData = Encoding.UTF8.GetString(data);
+
+            Debug.Log($"Loaded JSON data: {jsonData}");
+            return JsonConvert.DeserializeObject<T>(jsonData);
+        }
+    }
+
+
+     void LoadLevel()
+    {
+        int width = maps.width;
+        int height = maps.height;
+        for (int i = 0; i < height; i++)
+        {
+            for (int j = 0; j < width; j++)
+            {
+                int index = maps.idx[i * width + j][0];
+                int rotation = maps.idx[i * width + j][1];
+
+                if (modelPrefabs.ContainsKey(index))
+                {
+                    Vector3 position = new Vector3(i, 0, j);
+                    Quaternion rotationQuaternion = Quaternion.Euler(0, rotation * 90, 0);
+                    Instantiate(modelPrefabs[index], position, rotationQuaternion);
+                }
+            }
+        }
     }
 
     // -----------------------------------------------------------------------
 
-
+    
     private void OnButtonMouseDown(MouseDownEvent evt, Button _button)
     {
         if (evt.ctrlKey)
@@ -552,5 +677,7 @@ public class MapEditors : MonoBehaviour
         _button.style.borderLeftColor = new StyleColor(new Color32(255, 0, 0, _alpa));
         _button.style.borderRightColor = new StyleColor(new Color32(255, 0, 0, _alpa));
     }
+
+   
  
 }
