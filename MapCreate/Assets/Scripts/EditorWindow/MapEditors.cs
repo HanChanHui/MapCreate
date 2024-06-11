@@ -78,9 +78,10 @@ public class MapEditors : MonoBehaviour
         selecticonRotate = 0;
         iconEventCnt = 0;
         iconCnt = 0;
-        modelPrefabs[1] = Resources.Load<GameObject>("Base");
-        modelPrefabs[2] = Resources.Load<GameObject>("Base_10");
+        modelPrefabs[1] = Resources.Load<GameObject>("Base_0");
+        modelPrefabs[2] = Resources.Load<GameObject>("Base_1");
     }
+
     public void IconEvent(VisualElement _gridiconPanel)
     {
         if(_gridiconPanel != null)
@@ -113,23 +114,21 @@ public class MapEditors : MonoBehaviour
         iconData[iconCnt++].rotate = selecticonRotate;
 
         Sprite[] sprites = Resources.LoadAll<Sprite>("Sprite");
-        
         if(sprites.Length > 0)
         {
-            for(int i = 0; i < sprites.Length; i++)
-            {
-                iconData[iconCnt].icon = sprites[i];
-                iconData[iconCnt++].rotate = 0;
 
-                // Icon 추가
-                IconCreate(_panel, sprites[i].name);
+            foreach(Sprite sprite in sprites)
+            {
+                iconData[iconCnt].icon = sprite;
+                iconData[iconCnt].rotate = 0;
+                IconCreate(_panel, sprite.name);
             }
         }
         else
         {
             Debug.Log("스프라이트가 없습니다.");
         }
-
+       
     }
 
     // icon 추가 기능
@@ -183,7 +182,8 @@ public class MapEditors : MonoBehaviour
 
         string targetIndex = _name.ToString().Substring(_name.ToString().IndexOf('_') + 1);
         btn.tabIndex = int.Parse(targetIndex);
-        btn.style.backgroundImage = new StyleBackground(iconData[iconCnt - 1].icon);
+        btn.style.backgroundImage = new StyleBackground(iconData[iconCnt].icon);
+        iconCnt++;
     }
 
     /// <summary>
@@ -228,6 +228,7 @@ public class MapEditors : MonoBehaviour
         {
             for(int i = 0; i < iconCnt; i++)
             {
+                Debug.Log(iconData[i].btn + ", " + iconData[i].rotate);
                 if(iconData[i].btn.ClassListContains("button-grid--check"))
                 {
                     iconData[i].btn.RemoveFromClassList("button-grid--check");
@@ -238,6 +239,7 @@ public class MapEditors : MonoBehaviour
             target.AddToClassList("button-grid--check");
 
             selectInt = target.tabIndex;
+            Debug.Log(selectInt);
             selecticonRotate = iconData[selectInt].rotate;
         }
         else
@@ -263,7 +265,7 @@ public class MapEditors : MonoBehaviour
         }
         
         WindowCreate(_toggle, _width, _height);
-        maps = new Map();
+        //maps = new Map();
         maps.width = _width;
         maps.height = _height;
         
@@ -427,98 +429,20 @@ public class MapEditors : MonoBehaviour
 
     public void LoadLVBtn(Label _fileName, Label _result, BaseField<int> _currentlv, Toggle _toggle, string _filepath)
     {
-        //maps = new Map();
+        //Map maped = LoadJsonFile<Map>(Application.dataPath + "/Resources/Maps", _filepath);
         maps = LoadJsonFile<Map>(Application.dataPath + "/Resources/Maps", _filepath);
-        
-        Debug.Log($"Loaded map with {maps.idx.Count} items.");
-        // Load된 데이터 출력
-        for (int i = 0; i < maps.idx.Count; i++)
-        {
-            Debug.Log($"maps.idx[{i}] has {maps.idx[i].Count} elements.");
-        }
-        // try
-        // {
-        //     maps = LoadJsonFile<Map>(Application.dataPath + "/Resources/Maps", _filepath);
-
-        //     Debug.Log(maps.name);
-        //     Debug.Log(maps.width);
-        //     Debug.Log(maps.height);
-        //     Debug.Log(maps.lv);
-        //     if (maps.idx != null)
-        //     {
-        //         Debug.Log("Idx count: " + maps.idx.Count);
-        //         foreach (var sublist in maps.idx)
-        //         {
-        //             Debug.Log(string.Join(", ", sublist));
-        //         }
-        //     }
-        //     else
-        //     {
-        //         Debug.Log("Idx is null");
-        //     }
-
-        // }
-        // catch (FileNotFoundException e)
-        // {
-        //     Debug.LogError(e.Message);
-        // }
-        // catch (Exception e)
-        // {
-        //     Debug.LogError(e.Message);
-        // }   
-        // foreach(List<int> innerList in maps.idx)
-        // {
-        //     Debug.Log("maps idx : " + string.Join(", ", innerList));
-        // }
-
 
         // 버튼 생성
         BtnCreate(_toggle, _result, maps.width, maps.height);
         _fileName.text = maps.name;
         _currentlv.value = maps.lv;
 
-        
-        int maxRange = maps.width * maps.height;
-        buttons = new ButtonData[maxRange + 1];
-
-        for(int i = 0; i <= maxRange; i++)
+        int idx = 0;   
+        foreach(List<int> innerList in maps.idx)
         {
-            buttons[i] = new ButtonData();
+            BtnClickState(buttons[idx].btn, idx, innerList[0], innerList[1]);
+            idx++;
         }
-
-        int idx = 0;
-        Debug.Log($"maps.idx is {(maps.idx == null ? "null" : "not null")} and has {maps.idx?.Count ?? 0} elements.");
-        if(maps.idx != null)
-        {
-            foreach (List<int> innerList in maps.idx)
-            {
-            Debug.Log($"maps.idx[{idx}] has {innerList.Count} elements.");
-            if (innerList.Count >= 2) // Ensure there are at least two elements in the inner list
-            {
-                if(buttons[idx].btn == null)
-                {
-                    Debug.LogWarning($"buttons[{idx}].btn is not initialized.");
-                }
-                else
-                {
-                    BtnClickState(buttons[idx].btn, idx, innerList[0], innerList[1]);
-                }
-                
-            }   
-            else
-            {
-                Debug.LogWarning($"maps.idx[{idx}] does not have enough elements.");
-            }
-                idx++;
-            }
-        }
-        else{
-            Debug.LogWarning("maos.idx is null");
-        }
-        // for (int i = 0; i < maxRange; i++)
-        // {
-        //     BtnClickState(buttons[i].btn, i, maps.idx[i][0], maps.idx[i][1]);
-        // }
     }
 
     private void CreateJsonFile(string _createPath, string _fileName, string _jsonData)
@@ -550,10 +474,12 @@ public class MapEditors : MonoBehaviour
     }
 
 
-     void LoadLevel()
+    void LoadLevel()
     {
         int width = maps.width;
         int height = maps.height;
+
+        GameObject gridParent = new GameObject("Grids");
         for (int i = 0; i < height; i++)
         {
             for (int j = 0; j < width; j++)
@@ -565,7 +491,8 @@ public class MapEditors : MonoBehaviour
                 {
                     Vector3 position = new Vector3(i, 0, j);
                     Quaternion rotationQuaternion = Quaternion.Euler(0, rotation * 90, 0);
-                    Instantiate(modelPrefabs[index], position, rotationQuaternion);
+                    GameObject gridmodel = Instantiate(modelPrefabs[index], position, rotationQuaternion);
+                    gridmodel.transform.parent = gridParent.transform;
                 }
             }
         }
@@ -601,7 +528,7 @@ public class MapEditors : MonoBehaviour
             Vector2 currentPos = evt.localMousePosition;
             Rect selectionRect = new Rect(Mathf.Min(startDragPos.x, currentPos.x), Mathf.Min(startDragPos.y, currentPos.y),
                                           Mathf.Abs(startDragPos.x - currentPos.x), Mathf.Abs(startDragPos.y - currentPos.y));
-                                        
+                               
             foreach(var buttonData in buttons)
             {
                 if(buttonData.btn != null)
