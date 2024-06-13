@@ -61,7 +61,7 @@ public class MapEditors : MonoBehaviour
     public MapWindow window;
     public VisualElement btnTool;
 
-    private Map maps;
+    private Map maps = new Map();
 
     // -------------------------------------
     public List<Button> selectedButtons = new List<Button>();
