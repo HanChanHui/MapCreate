@@ -71,6 +71,15 @@ public class MapEditors : MonoBehaviour
     private Dictionary<int , GameObject> modelPrefabs = new Dictionary<int, GameObject>();
 
 
+    private float deltaTime = 0f;
+    private float fps = 0;
+
+    private void Update() {
+        deltaTime += (Time.unscaledDeltaTime - deltaTime) * 0.1f;
+        fps = 1.0f / deltaTime;
+    }
+
+
     public void Init()
     {
         currentLevel = 0;

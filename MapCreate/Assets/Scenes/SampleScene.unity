@@ -418,15 +418,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1467736007}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54afc8dd117eecc41a7b6cf2d0b7e812, type: 3}
+  m_Script: {fileID: 11500000, guid: e5524162c174bea45b00ffd7a078fa60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentLevel: 1
-  selectInt: 2
-  selecticonRotate: 0
-  iconCnt: 7
-  iconEventCnt: 7
-  window: {fileID: 0}
+  deltaTime: 0
+  fps: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

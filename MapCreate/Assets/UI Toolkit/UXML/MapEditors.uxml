@@ -1,8 +1,10 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
     <ui:Template name="MapControllor" src="project://database/Assets/UI%20Toolkit/UXML/MapControllor.uxml?fileID=9197481963319205126&amp;guid=86cd9b96968efed4ca0bcc4f97aeccaa&amp;type=3#MapControllor" />
-    <Style src="project://database/Assets/CustomTemplate/Template/NKUSSTemplate.uss?fileID=7433441132597879392&amp;guid=6a25e899d15eb994b85241dddfd90559&amp;type=3#NKUSSTemplate" />
-    <Style src="project://database/Assets/CustomTemplate/Template/OdinUSSTemplate.uss?fileID=7433441132597879392&amp;guid=8ee2195f99d140f43ae4fd9b456629f9&amp;type=3#OdinUSSTemplate" />
-    <Style src="project://database/Assets/CustomTemplate/Template/ToggleUSSTemplate.uss?fileID=7433441132597879392&amp;guid=2e3e5c2da0c15f741a97092246c349e6&amp;type=3#ToggleUSSTemplate" />
-    <uie:ObjectField label="Script" binding-path="m_Script" name="unity-input-m_Script" class="unity-base-field__aligned" />
-    <ui:Instance template="MapControllor" name="MapControllor" />
+    <Style src="project://database/Assets/Assets/CustomTemplate/Template/NKUSSTemplate.uss?fileID=7433441132597879392&amp;guid=6a25e899d15eb994b85241dddfd90559&amp;type=3#NKUSSTemplate" />
+    <Style src="project://database/Assets/Assets/CustomTemplate/Template/OdinUSSTemplate.uss?fileID=7433441132597879392&amp;guid=8ee2195f99d140f43ae4fd9b456629f9&amp;type=3#OdinUSSTemplate" />
+    <Style src="project://database/Assets/Assets/CustomTemplate/Template/ToggleUSSTemplate.uss?fileID=7433441132597879392&amp;guid=2e3e5c2da0c15f741a97092246c349e6&amp;type=3#ToggleUSSTemplate" />
+    <ui:VisualElement style="flex-grow: 1;">
+        <uie:ObjectField label="Script" binding-path="m_Script" name="unity-input-m_Script" class="unity-base-field__aligned" />
+        <ui:Instance template="MapControllor" name="MapControllor" />
+    </ui:VisualElement>
 </ui:UXML>

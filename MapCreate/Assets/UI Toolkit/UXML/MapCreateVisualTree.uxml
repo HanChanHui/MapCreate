@@ -1,0 +1,12 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <ui:Label tabindex="-1" text="Map Create" parse-escape-sequences="true" display-tooltip-when-elided="true" style="-unity-font-style: bold; font-size: 24px; -unity-text-outline-width: 0.5px;" />
+    <ui:VisualElement name="Panel1" style="flex-grow: 1;">
+        <uie:PropertyField binding-path="fps" name="FPS_text" />
+        <uie:PropertyField binding-path="worldTime" name="WorldTime_text" />
+        <ui:VisualElement name="TileInformation" style="flex-grow: 1;">
+            <ui:SliderInt label="TileScale" high-value="100" binding-path="tileSizeX" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+    <ui:VisualElement name="Panel2" style="flex-grow: 1;" />
+    <ui:VisualElement name="Panel3" style="flex-grow: 1;" />
+</ui:UXML>
