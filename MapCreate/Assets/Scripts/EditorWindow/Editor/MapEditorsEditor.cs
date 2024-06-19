@@ -8,6 +8,8 @@ using UnityEngine.UIElements;
 public class MapEditorsEditor : Editor
 {
     public VisualTreeAsset TreeAsset;
+    private SliderInt m_Slider;
+    private Label m_SliderNumber;
     // private MapEditors _mapEditors;
 
     // // ===============================================
@@ -32,6 +34,11 @@ public class MapEditorsEditor : Editor
         VisualElement root = new VisualElement();
         TreeAsset.CloneTree(root);
         
+        m_Slider = root.Q<SliderInt>("basicSlider");
+        Debug.Log(m_Slider);
+        m_SliderNumber = root.Q<Label>("sliderNumber");
+        Debug.Log(m_SliderNumber);
+        m_Slider.RegisterCallback<ChangeEvent<int>>(SliderValueChanged);
         
         // _mapEditors.Init();
         // // Add your UI content here
@@ -78,5 +85,11 @@ public class MapEditorsEditor : Editor
     // {
     //    _mapEditors.IconEventDelete();
     // }
+
+    void SliderValueChanged(ChangeEvent<int> value)
+    {
+        int v = value.newValue;
+        m_SliderNumber.text = v.ToString();
+    }
 
 }
