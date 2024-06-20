@@ -2,15 +2,21 @@
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
+using System.Collections.Generic;
+using System.Linq;
 
 
 [CustomEditor(typeof(MapEditor))]
 public class MapEditorsEditor : Editor
 {
+    private MapEditor _mapEditor;
+
     public VisualTreeAsset TreeAsset;
-    private SliderInt m_Slider;
-    private Label m_SliderNumber;
-    // private MapEditors _mapEditors;
+    public VisualElement scalePanel;
+    public VisualElement tileSizePanel;
+    public VisualElement tilePosPanel;
+
+
 
     // // ===============================================
     // public VisualElement gridiconPanel;
@@ -29,16 +35,18 @@ public class MapEditorsEditor : Editor
         {
             return base.CreateInspectorGUI();
         }
-        //_mapEditors = (MapEditors)target;
+        _mapEditor = (MapEditor)target;
 
         VisualElement root = new VisualElement();
         TreeAsset.CloneTree(root);
         
-        m_Slider = root.Q<SliderInt>("basicSlider");
-        Debug.Log(m_Slider);
-        m_SliderNumber = root.Q<Label>("sliderNumber");
-        Debug.Log(m_SliderNumber);
-        m_Slider.RegisterCallback<ChangeEvent<int>>(SliderValueChanged);
+        scalePanel = root.Q<VisualElement>("ScalePanel");
+        tileSizePanel = root.Q<VisualElement>("TileSizePanel");
+        tilePosPanel = root.Q<VisualElement>("TilePosPanel");
+        SliderRegister(scalePanel);
+        SliderRegister(tileSizePanel);
+        SliderRegister(tilePosPanel);
+        
         
         // _mapEditors.Init();
         // // Add your UI content here
@@ -86,10 +94,28 @@ public class MapEditorsEditor : Editor
     //    _mapEditors.IconEventDelete();
     // }
 
-    void SliderValueChanged(ChangeEvent<int> value)
+    private void SliderRegister(VisualElement _panel)
+    {
+        if(_panel != null)
+        {
+            foreach(var child in _panel.Children())
+            {
+                if(child is SliderInt slider)
+                {
+                    var secondChild = slider.Children().ElementAtOrDefault(1);
+                    if(secondChild is Label label)
+                    {
+                        slider.RegisterCallback<ChangeEvent<int>>((evt) => { SliderValueChanged(evt, label); });
+                    }
+                }
+            }
+        }
+    }
+
+    void SliderValueChanged(ChangeEvent<int> value, Label _sliderNumber)
     {
         int v = value.newValue;
-        m_SliderNumber.text = v.ToString();
+        _sliderNumber.text = v.ToString();
     }
 
 }

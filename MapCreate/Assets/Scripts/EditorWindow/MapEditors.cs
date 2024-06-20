@@ -8,27 +8,27 @@ using System.Collections.Generic;
 using System;
 
 
-class Map{
-    [JsonProperty("name")]
-    public string name { get; set; }
-    [JsonProperty("lv")]
-    public int lv { get; set; }
-    [JsonProperty("width")]
-    public int width { get; set; }
-    [JsonProperty("height")]
-    public int height { get; set; }
-    [JsonProperty("idx")]
-    public List<List<int>> idx { get; set; }
+// class Map{
+//     [JsonProperty("name")]
+//     public string name { get; set; }
+//     [JsonProperty("lv")]
+//     public int lv { get; set; }
+//     [JsonProperty("width")]
+//     public int width { get; set; }
+//     [JsonProperty("height")]
+//     public int height { get; set; }
+//     [JsonProperty("idx")]
+//     public List<List<int>> idx { get; set; }
 
-    public Map()
-    {
-        this.name = "";
-        this.lv = 0;
-        this.width = 0;
-        this.height = 0;
-        this.idx = new List<List<int>>();
-    }
-}
+//     public Map()
+//     {
+//         this.name = "";
+//         this.lv = 0;
+//         this.width = 0;
+//         this.height = 0;
+//         this.idx = new List<List<int>>();
+//     }
+// }
 
 public class MapEditors : MonoBehaviour
 {
@@ -69,15 +69,6 @@ public class MapEditors : MonoBehaviour
     private bool isDragging = false;
 
     private Dictionary<int , GameObject> modelPrefabs = new Dictionary<int, GameObject>();
-
-
-    private float deltaTime = 0f;
-    private float fps = 0;
-
-    private void Update() {
-        deltaTime += (Time.unscaledDeltaTime - deltaTime) * 0.1f;
-        fps = 1.0f / deltaTime;
-    }
 
 
     public void Init()
@@ -315,13 +306,13 @@ public class MapEditors : MonoBehaviour
             _btnTool.Add(buttons[i].btn);
 
             buttons[i].btn.RegisterCallback<ClickEvent>(evt => {BtnClick(evt, _toggle, maxRange);});
-            buttons[i].btn.RegisterCallback<MouseDownEvent>(evt => OnButtonMouseDown(evt, buttons[index].btn));
+            //buttons[i].btn.RegisterCallback<MouseDownEvent>(evt => OnButtonMouseDown(evt, buttons[index].btn));
             buttons[i].btn.style.backgroundImage = new StyleBackground(iconData[0].icon);
         }
 
-        window.rootVisualElement.RegisterCallback<MouseDownEvent>(OnMouseDowns);
-        window.rootVisualElement.RegisterCallback<MouseMoveEvent>(OnMouseMove);
-        window.rootVisualElement.RegisterCallback<MouseUpEvent>(OnMouseUps);
+        // window.rootVisualElement.RegisterCallback<MouseDownEvent>(OnMouseDowns);
+        // window.rootVisualElement.RegisterCallback<MouseMoveEvent>(OnMouseMove);
+        // window.rootVisualElement.RegisterCallback<MouseUpEvent>(OnMouseUps);
 
         window.btnCreate.clicked += ()=> {LoadLevel();};
     }
@@ -510,109 +501,109 @@ public class MapEditors : MonoBehaviour
     // -----------------------------------------------------------------------
 
     
-    private void OnButtonMouseDown(MouseDownEvent evt, Button _button)
-    {
-        if (evt.ctrlKey)
-        {
-            ToggleButtonSelection(_button);
-        }
-        else if (selectedButtons.Count == 0 || !selectedButtons.Contains(_button))
-        {
-            ClearSelection();
-            SelectButton(_button);
-        }
-    }
+    // private void OnButtonMouseDown(MouseDownEvent evt, Button _button)
+    // {
+    //     if (evt.ctrlKey)
+    //     {
+    //         ToggleButtonSelection(_button);
+    //     }
+    //     else if (selectedButtons.Count == 0 || !selectedButtons.Contains(_button))
+    //     {
+    //         ClearSelection();
+    //         SelectButton(_button);
+    //     }
+    // }
 
-    public void OnMouseDowns(MouseDownEvent evt)
-    {
-        startDragPos = evt.localMousePosition;
-        isDragging = true;
-        ClearSelection();
-    }
+    // public void OnMouseDowns(MouseDownEvent evt)
+    // {
+    //     startDragPos = evt.localMousePosition;
+    //     isDragging = true;
+    //     ClearSelection();
+    // }
 
-    public void OnMouseMove(MouseMoveEvent evt)
-    {
-        if(isDragging)
-        {
-            Vector2 currentPos = evt.localMousePosition;
-            Rect selectionRect = new Rect(Mathf.Min(startDragPos.x, currentPos.x), Mathf.Min(startDragPos.y, currentPos.y),
-                                          Mathf.Abs(startDragPos.x - currentPos.x), Mathf.Abs(startDragPos.y - currentPos.y));
+    // public void OnMouseMove(MouseMoveEvent evt)
+    // {
+    //     if(isDragging)
+    //     {
+    //         Vector2 currentPos = evt.localMousePosition;
+    //         Rect selectionRect = new Rect(Mathf.Min(startDragPos.x, currentPos.x), Mathf.Min(startDragPos.y, currentPos.y),
+    //                                       Mathf.Abs(startDragPos.x - currentPos.x), Mathf.Abs(startDragPos.y - currentPos.y));
                                
-            foreach(var buttonData in buttons)
-            {
-                if(buttonData.btn != null)
-                {
-                    Rect btnRect = buttonData.btn.worldBound;
-                    if(selectionRect.Overlaps(btnRect))
-                    {
-                        SelectButton(buttonData.btn);
-                    }
-                    else
-                    {
-                        DeselectButton(buttonData.btn);
-                    }
-                }
-            }
-        }
-    }
+    //         foreach(var buttonData in buttons)
+    //         {
+    //             if(buttonData.btn != null)
+    //             {
+    //                 Rect btnRect = buttonData.btn.worldBound;
+    //                 if(selectionRect.Overlaps(btnRect))
+    //                 {
+    //                     SelectButton(buttonData.btn);
+    //                 }
+    //                 else
+    //                 {
+    //                     DeselectButton(buttonData.btn);
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
 
-    public void OnMouseUps(MouseUpEvent evt)
-    {
-        isDragging = false;
-    }
+    // public void OnMouseUps(MouseUpEvent evt)
+    // {
+    //     isDragging = false;
+    // }
 
-    private void ToggleButtonSelection(Button _button)
-    {
-        if(selectedButtons.Contains(_button))
-        {
-            DeselectButton(_button);
-        }
-        else
-        {
-            SelectButton(_button);
-        }
-    }
+    // private void ToggleButtonSelection(Button _button)
+    // {
+    //     if(selectedButtons.Contains(_button))
+    //     {
+    //         DeselectButton(_button);
+    //     }
+    //     else
+    //     {
+    //         SelectButton(_button);
+    //     }
+    // }
 
-    public void SelectButton(Button _button)
-    {
-        if(!selectedButtons.Contains(_button))
-        {
-            selectedButtons.Add(_button);
-            ColorChange(_button, 3, 255);
-        }
-    }
+    // public void SelectButton(Button _button)
+    // {
+    //     if(!selectedButtons.Contains(_button))
+    //     {
+    //         selectedButtons.Add(_button);
+    //         ColorChange(_button, 3, 255);
+    //     }
+    // }
 
-    public void DeselectButton(Button _button)
-    {
-        if(selectedButtons.Contains(_button))
-        {
-            selectedButtons.Remove(_button);
+    // public void DeselectButton(Button _button)
+    // {
+    //     if(selectedButtons.Contains(_button))
+    //     {
+    //         selectedButtons.Remove(_button);
 
-            ColorChange(_button, 0, 0);
-        }
-    }
+    //         ColorChange(_button, 0, 0);
+    //     }
+    // }
 
-    private void ClearSelection()
-    {
-        foreach(var _button in selectedButtons)
-        {
-            ColorChange(_button, 0, 0);
-        }
-        selectedButtons.Clear();
-    }
+    // private void ClearSelection()
+    // {
+    //     foreach(var _button in selectedButtons)
+    //     {
+    //         ColorChange(_button, 0, 0);
+    //     }
+    //     selectedButtons.Clear();
+    // }
 
-    private void ColorChange(Button _button, int _size, byte _alpa)
-    {
-        _button.style.borderTopWidth = _size;
-        _button.style.borderBottomWidth = _size;
-        _button.style.borderRightWidth = _size;
-        _button.style.borderLeftWidth = _size;
+    // private void ColorChange(Button _button, int _size, byte _alpa)
+    // {
+    //     _button.style.borderTopWidth = _size;
+    //     _button.style.borderBottomWidth = _size;
+    //     _button.style.borderRightWidth = _size;
+    //     _button.style.borderLeftWidth = _size;
 
-        _button.style.borderBottomColor = new StyleColor(new Color32(255, 0, 0, _alpa));
-        _button.style.borderTopColor = new StyleColor(new Color32(255, 0, 0, _alpa));
-        _button.style.borderLeftColor = new StyleColor(new Color32(255, 0, 0, _alpa));
-        _button.style.borderRightColor = new StyleColor(new Color32(255, 0, 0, _alpa));
-    }
+    //     _button.style.borderBottomColor = new StyleColor(new Color32(255, 0, 0, _alpa));
+    //     _button.style.borderTopColor = new StyleColor(new Color32(255, 0, 0, _alpa));
+    //     _button.style.borderLeftColor = new StyleColor(new Color32(255, 0, 0, _alpa));
+    //     _button.style.borderRightColor = new StyleColor(new Color32(255, 0, 0, _alpa));
+    // }
 
    
  
