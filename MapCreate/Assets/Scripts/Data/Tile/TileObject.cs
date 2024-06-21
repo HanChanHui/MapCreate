@@ -6,14 +6,33 @@ using UnityEngine.UIElements;
 public class TileObject
 {
     private TileSystem<TileObject> tileSystem;
-    private TilePosition tilePosition;
+    public TilePosition tilePosition;
     private List<Object> objectList;
+    public Sprite tileSprite;
+    public VisualElement tileVE;
+    public int tileRotate;
+    public int tileSpriteNum;
 
-    public TileObject(TileSystem<TileObject> _tileSystem, TilePosition _gridPosition)
+
+    public TileObject(TileSystem<TileObject> _tileSystem, TilePosition _gridPosition, Sprite _tileSprite)
     {
         this.tileSystem = _tileSystem;
         this.tilePosition = _gridPosition;
+        this.tileSprite = _tileSprite;
         objectList = new List<Object>();
+        this.tileVE = new VisualElement();
+        this.tileVE.style.backgroundImage = new StyleBackground(_tileSprite);
+        this.tileVE.style.backgroundColor = Color.blue;
+        this.tileVE.style.width = 50;
+        this.tileVE.style.height = 50;
+    }
+
+    public void UpdateTile(Sprite sprite, int rotate)
+    {
+        this.tileSprite = sprite;
+        this.tileRotate = rotate;
+        this.tileVE.style.backgroundImage = new StyleBackground(sprite);
+        this.tileVE.style.rotate = new Rotate(new Angle(rotate * 90));
     }
 
     public override string ToString()

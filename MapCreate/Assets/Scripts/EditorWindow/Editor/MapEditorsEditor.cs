@@ -25,9 +25,9 @@ public class MapEditorsEditor : Editor
     // public BaseField<int> currentLevelField;
 
     // public Label fileName;
-    // public Label result;
+    public Label result;
 
-    // public Toggle spritefullin;
+    public Toggle spritefullin;
 
     public override VisualElement CreateInspectorGUI()
     {
@@ -48,36 +48,36 @@ public class MapEditorsEditor : Editor
         SliderRegister(tilePosPanel);
         
         
-        // _mapEditors.Init();
-        // // Add your UI content here
+        _mapEditor.Init();
+        // Add your UI content here
         // var inputMScript = root.Q<ObjectField>("unity-input-m_Script");
         // inputMScript.AddToClassList("unity-disabled");
         // inputMScript.Q(null, "unity-object-field__selector")?.SetEnabled(false);
 
 
-        // widthField = root.Q<BaseField<int>>("width_int");
-        // heightField = root.Q<BaseField<int>>("height_int");
-        // gridiconPanel = root.Q<VisualElement>("gridiconPanel");
-        // _mapEditors.IconLoad(gridiconPanel);
+        //widthField = root.Q<BaseField<int>>("width_int");
+        //heightField = root.Q<BaseField<int>>("height_int");
+        //gridiconPanel = root.Q<VisualElement>("gridiconPanel");
+        //_mapEditor.IconLoad(gridiconPanel);
 
-        // // 현재 레벨 인덱스
-        // currentLevelField = root.Q<BaseField<int>>("current_level");
-        // currentLevelField.RegisterValueChangedCallback((evt) => { _mapEditors.ChangeLevel(evt.newValue); });
+        // 현재 레벨 인덱스
+        //currentLevelField = root.Q<BaseField<int>>("current_level");
+        //currentLevelField.RegisterValueChangedCallback((evt) => { _mapEditors.ChangeLevel(evt.newValue); });
 
-        // spritefullin = root.Q<Toggle>("spritefullin");
+        spritefullin = root.Q<Toggle>("tileFullIn");
         
-        // // 결과 라벨
-        // fileName = root.Q<Label>("fileName_label");
-        // result = root.Q<Label>("result_label");
+        // 결과 라벨
+        //fileName = root.Q<Label>("fileName_label");
+        result = root.Q<Label>("result_label");
         
         
         
-        // //root.Q<Button>("grid_add").clicked += ()=> { _mapEditors.IconAdd(gridiconPanel); };
-        // root.Q<Button>("createBtn").clicked += ()=> { _mapEditors.BtnCreate(spritefullin, result, widthField.value, heightField.value); };
-        // root.Q<Button>("deleteBtn").clicked += ()=> { _mapEditors.BtnClose(); };
-        // root.Q<Button>("saveBtn").clicked += ()=> { _mapEditors.SaveBtn(fileName, result, widthField.value, heightField.value); };
-        // root.Q<Button>("loadBtn").clicked += ()=> { _mapEditors.LoadBtn(fileName, result, currentLevelField, spritefullin); };
-        // root.Q<Button>("iconrotationBtn").clicked += () => { _mapEditors.IconRotate(); };
+        //root.Q<Button>("grid_add").clicked += ()=> { _mapEditors.IconAdd(gridiconPanel); };
+        root.Q<Button>("createBtn").clicked += ()=> { _mapEditor.BtnCreate(spritefullin, result, _mapEditor.scaleX, _mapEditor.scaleY); };
+        root.Q<Button>("deleteBtn").clicked += ()=> { _mapEditor.BtnClose(); };
+        //root.Q<Button>("saveBtn").clicked += ()=> { _mapEditors.SaveBtn(fileName, result, widthField.value, heightField.value); };
+        //root.Q<Button>("loadBtn").clicked += ()=> { _mapEditors.LoadBtn(fileName, result, currentLevelField, spritefullin); };
+        //root.Q<Button>("iconrotationBtn").clicked += () => { _mapEditors.IconRotate(); };
 
 
         // //-----------------------------------------

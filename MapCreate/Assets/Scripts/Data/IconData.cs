@@ -4,13 +4,13 @@ using UnityEngine.UIElements;
 public struct IconData
 {
     public Sprite icon;
-    public Button btn;
+    public VisualElement iconVE;
     public int rotate;
 
-    public IconData(Sprite _icon, Button _btn, int _rotate)
+    public IconData(Sprite _icon, VisualElement _iconVE, int _rotate)
     {
         this.icon = _icon;
-        this.btn = _btn;
+        this.iconVE = _iconVE;
         this.rotate = _rotate;
     }
 }

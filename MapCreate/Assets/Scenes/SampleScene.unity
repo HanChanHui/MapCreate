@@ -424,12 +424,27 @@ MonoBehaviour:
   worldTime: 0
   deltaTime: 0
   fps: 0
-  scaleX: 0
-  scaleY: 0
+  scaleX: 10
+  scaleY: 10
   tileSizeX: 0
   tileSizeY: 0
   tilePosX: 0
   tilePosY: 0
+  colorR: 0
+  colorG: 0
+  colorB: 0
+  colorA: 0
+  imgIdx: 0
+  pickingIdxX: 0
+  pickingIdxY: 0
+  mouseIdxX: 0
+  mouseIdxY: 0
+  currentLevel: 0
+  selectInt: 0
+  selecticonRotate: 0
+  iconCnt: 0
+  iconEventCnt: 0
+  window: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

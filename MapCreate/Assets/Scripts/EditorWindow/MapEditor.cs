@@ -6,7 +6,8 @@ using Newtonsoft.Json;
 using System.Text;
 using System.Collections.Generic;
 
-class Map{
+class Map
+{
     [JsonProperty("name")]
     public string name { get; set; }
     [JsonProperty("lv")]
@@ -98,10 +99,11 @@ public class MapEditor : MonoBehaviour
     // -------------------------------------
     public List<Button> selectedButtons = new List<Button>();
 
+    private TileSystem<TileObject> tileSystem;
 
-    private Dictionary<int , GameObject> modelPrefabs = new Dictionary<int, GameObject>();
+    private Dictionary<int, GameObject> modelPrefabs = new Dictionary<int, GameObject>();
 
-    private void Update() 
+    private void Update()
     {
         deltaTime += (Time.unscaledDeltaTime - deltaTime) * 0.1f;
         worldTime += Time.deltaTime;
@@ -119,17 +121,17 @@ public class MapEditor : MonoBehaviour
         modelPrefabs[2] = Resources.Load<GameObject>("Base_1");
     }
 
-    public void IconEvent(VisualElement _gridiconPanel)
+    public void IconEvent(VisualElement _btnToolPanel)
     {
-        if(_gridiconPanel != null)
+        if (_btnToolPanel != null)
         {
             // grid 버튼 등록 및 이벤트 추가
-            foreach(var child in _gridiconPanel.Children())
+            foreach (var child in _btnToolPanel.Children())
             {
-                if(child is Button button)
+                if (child is VisualElement VE)
                 {
-                    iconData[iconEventCnt].btn = button;
-                    iconData[iconEventCnt++].btn.RegisterCallback<ClickEvent>(OnGridCheckButton);
+                    iconData[iconEventCnt].iconVE = VE;
+                    iconData[iconEventCnt++].iconVE.RegisterCallback<ClickEvent>(OnGridCheckButton);
                 }
             }
         }
@@ -137,9 +139,9 @@ public class MapEditor : MonoBehaviour
 
     public void IconEventDelete()
     {
-        for(int i = 0; i < iconEventCnt - 1; i++)
+        for (int i = 0; i < iconEventCnt - 1; i++)
         {
-            iconData[i].btn.UnregisterCallback<ClickEvent>(OnGridCheckButton);
+            iconData[i].iconVE.UnregisterCallback<ClickEvent>(OnGridCheckButton);
         }
 
         BtnClose();
@@ -151,10 +153,10 @@ public class MapEditor : MonoBehaviour
         iconData[iconCnt++].rotate = selecticonRotate;
 
         Sprite[] sprites = Resources.LoadAll<Sprite>("Sprite");
-        if(sprites.Length > 0)
+        if (sprites.Length > 0)
         {
 
-            foreach(Sprite sprite in sprites)
+            foreach (Sprite sprite in sprites)
             {
                 iconData[iconCnt].icon = sprite;
                 iconData[iconCnt].rotate = 0;
@@ -165,7 +167,7 @@ public class MapEditor : MonoBehaviour
         {
             Debug.Log("스프라이트가 없습니다.");
         }
-       
+
     }
 
     // icon 추가 기능
@@ -207,7 +209,7 @@ public class MapEditor : MonoBehaviour
         btn.style.backgroundImage = new StyleBackground(iconData[iconCnt - 1].icon);
     }*/
 
-    public void IconCreate (VisualElement _panel, string _name)
+    public void IconCreate(VisualElement _panel, string _name)
     {
         Button btn = new Button();
         btn.style.width = 50;
@@ -231,26 +233,8 @@ public class MapEditor : MonoBehaviour
         selecticonRotate = iconData[selectInt].rotate;
         selecticonRotate = (selecticonRotate + 1) % 4;
         int rot = selecticonRotate * 90;
-        Debug.Log(new StyleRotate((StyleKeyword)rot));
-        switch (selecticonRotate)
-        {
-            case 0:
-                iconData[selectInt].btn.style.rotate = new Rotate(new Angle(rot));
-                iconData[selectInt].rotate = selecticonRotate;
-                break;
-            case 1:
-                iconData[selectInt].btn.style.rotate = new Rotate(new Angle(rot));
-                iconData[selectInt].rotate = selecticonRotate;
-                break;
-            case 2:
-                iconData[selectInt].btn.style.rotate = new Rotate(new Angle(rot));
-                iconData[selectInt].rotate = selecticonRotate;
-                break;
-            case 3:
-                iconData[selectInt].btn.style.rotate = new Rotate(new Angle(rot));
-                iconData[selectInt].rotate = selecticonRotate;
-                break;
-        }
+        iconData[selectInt].iconVE.style.rotate = new Rotate(new Angle(rot));
+        iconData[selectInt].rotate = selecticonRotate;
     }
 
     /// <summary>
@@ -258,17 +242,17 @@ public class MapEditor : MonoBehaviour
     /// </summary>
     public void OnGridCheckButton(ClickEvent _evt)
     {
-        var target = _evt.target as Button;
+        var target = _evt.target as VisualElement;
 
         // 초기화
-        if(!target.ClassListContains("button-grid--check"))
+        if (!target.ClassListContains("button-grid--check"))
         {
-            for(int i = 0; i < iconCnt; i++)
+            for (int i = 0; i < iconCnt; i++)
             {
-                Debug.Log(iconData[i].btn + ", " + iconData[i].rotate);
-                if(iconData[i].btn.ClassListContains("button-grid--check"))
+                Debug.Log(iconData[i].iconVE + ", " + iconData[i].rotate);
+                if (iconData[i].iconVE.ClassListContains("button-grid--check"))
                 {
-                    iconData[i].btn.RemoveFromClassList("button-grid--check");
+                    iconData[i].iconVE.RemoveFromClassList("button-grid--check");
                 }
             }
 
@@ -278,6 +262,16 @@ public class MapEditor : MonoBehaviour
             selectInt = target.tabIndex;
             Debug.Log(selectInt);
             selecticonRotate = iconData[selectInt].rotate;
+
+            for (int i = 0; i < iconData.Length; i++)
+            {
+                if (iconData[i].iconVE == target)
+                {
+                    selectInt = i;
+                    selecticonRotate = iconData[i].rotate;
+                    break;
+                }
+            }
         }
         else
         {
@@ -286,7 +280,7 @@ public class MapEditor : MonoBehaviour
 
             selectInt = 0;
             selecticonRotate = 0;
-        }  
+        }
     }
 
     /// <summary>
@@ -295,18 +289,18 @@ public class MapEditor : MonoBehaviour
     public void BtnCreate(Toggle _toggle, Label _result, int _width, int _height)
     {
         // grid가 이미 있을땐, 생성 불가
-        if(btnTool != null && btnTool.childCount != 0)
+        if (btnTool != null && btnTool.childCount != 0)
         {
             _result.text = "Grid를 생성 혹은 삭제 후 다시시도";
             return;
         }
-        
+
         WindowCreate(_toggle, _width, _height);
         //maps = new Map();
         maps.width = _width;
         maps.height = _height;
-        
-        _result.text = "생성 완료";
+
+        //_result.text = "생성 완료";
     }
 
     /// <summary>
@@ -323,6 +317,9 @@ public class MapEditor : MonoBehaviour
 
         // Window에 있는 btnTool 복사
         btnTool = window.btnTool;
+        btnTool.style.width = _width * 50 + (2 * _width);
+        btnTool.style.height = _height * 50 + (2 * _height);
+
 
         WindowBtnCreate(btnTool, _toggle, _width, _height);
     }
@@ -331,22 +328,28 @@ public class MapEditor : MonoBehaviour
     /// </summary>
     private void WindowBtnCreate(VisualElement _btnTool, Toggle _toggle, int _width, int _height)
     {
-        int maxRange = BtnToolPanelSize(_btnTool, _width, _height);
-        buttons = new ButtonData[maxRange + 1];
-        for(int i = 0; i < maxRange; i++)
-        {
-            int index = i;
-            buttons[i].btn = new Button();
-            buttons[i].btn.style.width = 50;
-            buttons[i].btn.style.height = 50;
-            buttons[i].btn.name = i.ToString();
-            _btnTool.Add(buttons[i].btn);
+        
+        tileSystem = new TileSystem<TileObject>(
+        _width,
+        _height,
+        50f,
+        (system, position, sprite) => new TileObject(system, position, sprite),
+        _btnTool);
 
-            buttons[i].btn.RegisterCallback<ClickEvent>(evt => {BtnClick(evt, _toggle, maxRange);});
-            buttons[i].btn.style.backgroundImage = new StyleBackground(iconData[0].icon);
+        for (int y = 0; y < _height; y++)
+        {
+            for (int x = 0; x < _width; x++)
+            {
+                TilePosition position = new TilePosition(x, y);
+                TileObject tile = tileSystem.GetGridObject(position);
+                tile.tileVE.RegisterCallback<ClickEvent>(evt =>
+                {
+                    BtnClick(evt, _toggle, _width * _height);
+                });
+            }
         }
 
-        window.btnCreate.clicked += ()=> {LoadLevel();};
+        window.btnCreate.clicked += () => { LoadLevel(); };
     }
 
     /// <summary>
@@ -366,51 +369,67 @@ public class MapEditor : MonoBehaviour
 
     public void BtnClose()
     {
-        if(window == null)
+        if (window == null)
         {
             return;
         }
         btnTool.Clear();
         window.Close();
-
-        buttons = new ButtonData[201];
     }
     /// <summary>
     /// 버튼 클릭에 대한 이벤트.
     /// </summary>
     public void BtnClick(ClickEvent _evt, Toggle _toggle, int _maxRange)
     {
-        if(!_toggle.value)
+        if (!_toggle.value)
         {
-            var btn = _evt.target as Button;
-            int idx = int.Parse(btn.name);
-            BtnClickState(btn, idx, selectInt, selecticonRotate);
+            var tileElement = _evt.target as VisualElement;
+            if (tileElement != null)
+            {
+                TileObject tile = GetTileObjectFromElement(tileElement);
+                int idx = tile.tilePosition.x + tile.tilePosition.z * tileSystem.GetWidth();
+                BtnClickState(tileElement, idx, selectInt, selecticonRotate);
+            }
         }
         else
         {
             int maxRange = _maxRange;
             for (int i = 0; i < maxRange; i++)
             {
-                BtnClickState(buttons[i].btn, i, selectInt, selecticonRotate);
+                TilePosition position = new TilePosition(i % tileSystem.GetWidth(), i / tileSystem.GetWidth());
+                TileObject tile = tileSystem.GetGridObject(position);
+                BtnClickState(tile.tileVE, i, selectInt, selecticonRotate);
             }
         }
+    }
+
+    private TileObject GetTileObjectFromElement(VisualElement element)
+    {
+        foreach (TileObject tile in tileSystem)
+        {
+            if (tile.tileVE == element)
+            {
+                return tile;
+            }
+        }
+        return null;
     }
     /// <summary>
     /// 버튼 선택 상태.
     /// </summary>
-    private void BtnClickState(Button _btn, int _idx, int _selectInt, int _selecticonRotate)
+    private void BtnClickState(VisualElement _tileVE, int _idx, int _selectInt, int _selecticonRotate)
     {
-        buttons[_idx].btnIconNum = _selectInt;
-        buttons[_idx].btnIconRotate = _selecticonRotate;
-        _btn.style.backgroundImage = new StyleBackground(iconData[_selectInt].icon);
-        _btn.style.rotate = new Rotate(new Angle(selecticonRotate * 90));
+        TileObject tile = tileSystem.GetGridObject(new TilePosition(_idx % tileSystem.GetWidth(), _idx / tileSystem.GetWidth()));
+        tile.tileSpriteNum = _selectInt;
+        tile.tileRotate = _selecticonRotate;
+        tile.UpdateTile(iconData[_selectInt].icon, _selecticonRotate);
     }
     /// <summary>
     /// 생성한 Grid를 Json 방식으로 저장.
     /// </summary>
-    public void SaveBtn(Label _fileName, Label _result,  int _width, int _height)
+    public void SaveBtn(Label _fileName, Label _result, int _width, int _height)
     {
-        if(btnTool == null || btnTool.childCount == 0)
+        if (btnTool == null || btnTool.childCount == 0)
         {
             _result.text = "Grid가 없습니다.";
             return;
@@ -421,11 +440,11 @@ public class MapEditor : MonoBehaviour
         maps.idx = new List<List<int>>(maxRange);
         for (int i = 0; i < maxRange; i++)
         {
-             maps.idx.Add(new List<int> { buttons[i].btnIconNum, buttons[i].btnIconRotate });
+            maps.idx.Add(new List<int> { buttons[i].btnIconNum, buttons[i].btnIconRotate });
         }
 
         float level = currentLevel > 100 ? ((float)currentLevel / 1000) : ((float)currentLevel / 100);
-        string str_lv = level == 0 ?  new string("00") : level.ToString().Substring(level.ToString().IndexOf('.') + 1, 2);
+        string str_lv = level == 0 ? new string("00") : level.ToString().Substring(level.ToString().IndexOf('.') + 1, 2);
         maps.lv = currentLevel;
         maps.name = "Stage" + "_" + _width + "x" + _height + "_" + "0" + str_lv;
         _fileName.text = maps.name;
@@ -441,18 +460,18 @@ public class MapEditor : MonoBehaviour
     /// </summary>
     public void LoadBtn(Label _fileName, Label _result, BaseField<int> _currentlv, Toggle _toggle)
     {
-        if(btnTool != null && btnTool.childCount != 0)
+        if (btnTool != null && btnTool.childCount != 0)
         {
             _result.text = "Grid를 생성 혹은 삭제 후 다시시도";
             return;
         }
 
-        var path = EditorUtility.OpenFilePanel("Open Level", Application.dataPath + 
+        var path = EditorUtility.OpenFilePanel("Open Level", Application.dataPath +
                     "/Resources/Maps", "json");
         string filename = Path.GetFileName(path);
         filename = filename.Substring(0, filename.ToString().IndexOf('.'));
 
-        if(!string.IsNullOrEmpty(path))
+        if (!string.IsNullOrEmpty(path))
         {
             LoadLVBtn(_fileName, _result, _currentlv, _toggle, filename);
         }
@@ -469,8 +488,8 @@ public class MapEditor : MonoBehaviour
         _fileName.text = maps.name;
         _currentlv.value = maps.lv;
 
-        int idx = 0;   
-        foreach(List<int> innerList in maps.idx)
+        int idx = 0;
+        foreach (List<int> innerList in maps.idx)
         {
             BtnClickState(buttons[idx].btn, idx, innerList[0], innerList[1]);
             idx++;
@@ -488,7 +507,7 @@ public class MapEditor : MonoBehaviour
     private T LoadJsonFile<T>(string _loadPath, string _fileName)
     {
         string filePath = string.Format("{0}/{1}.json", _loadPath, _fileName);
-        
+
         if (!File.Exists(filePath))
         {
             throw new FileNotFoundException("File not found", filePath);

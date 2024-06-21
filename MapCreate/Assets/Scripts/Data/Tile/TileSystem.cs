@@ -2,28 +2,35 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
-public class TileSystem<TTileObject>
+public class TileSystem<TTileObject> : IEnumerable<TTileObject>
 {
     private int width;
     private int height;
     private float cellSize;
     private TTileObject[,] tileObjectArray;
+    private VisualElement parentElement;
 
-    public TileSystem(int width, int height, float cellSize, Func<TileSystem<TTileObject>, TilePosition, TTileObject> createTileObject)
+    public TileSystem(int _width, int _height, float _cellSize, Func<TileSystem<TTileObject>, TilePosition, Sprite, TTileObject> _createTileObject, VisualElement _parentElement)
     {
-        this.width = width;
-        this.height = height;
-        this.cellSize = cellSize;
+        this.width = _width;
+        this.height = _height;
+        this.cellSize = _cellSize;
+        this.parentElement = _parentElement;
 
-        tileObjectArray = new TTileObject[width, height];
+        tileObjectArray = new TTileObject[_width, _height];
 
-        for(int x = 0; x < width; x++)
+        for(int x = 0; x < _width; x++)
         {
-            for(int z = 0; z < height; z++)
+            for(int z = 0; z < _height; z++)
             {
                 TilePosition gridPosition = new TilePosition(x, z);
-                tileObjectArray[x, z] = createTileObject(this, gridPosition);
+                tileObjectArray[x, z] = _createTileObject(this, gridPosition, null);
+                VisualElement tileElement = (tileObjectArray[x, z] as TileObject).tileVE;
+                parentElement.Add(tileElement);
+                tileElement.style.borderLeftWidth = 0;
+                tileElement.style.borderRightWidth = 0;
             }
         }
 
@@ -78,6 +85,22 @@ public class TileSystem<TTileObject>
     public int GetHeight()
     {
         return height;
+    }
+
+    public IEnumerator<TTileObject> GetEnumerator()
+    {
+        for (int x = 0; x < width; x++)
+        {
+            for (int z = 0; z < height; z++)
+            {
+                yield return tileObjectArray[x, z];
+            }
+        }
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
     }
 }
 
